@@ -18,6 +18,8 @@ import DiagnosticPage from './pages/DiagnosticPage';
 import EmergencyFallback from './pages/EmergencyFallback';
 import HomePage from './pages/homePage';
 
+import ModernProductionDashboard from './pages/ProductionManagerDashboard';
+
 // Lazy load all other pages to improve initial load time
 const Inventories = lazy(() => import('./pages/inventories'));
 const CreateInventory = lazy(() => import('./pages/createInventory'));
@@ -38,7 +40,7 @@ const ContactUs = lazy(() => import('./pages/ContactUs'));
 const Register = lazy(() => import('./pages/register'));
 
 // Dashboard pages with preloadable implementation to prevent white screens
-const StaffDashboard = lazy(() => import('./pages/staffDashboard'));
+const StaffDashboard = lazy(() => import('./pages/StaffDashboard'));
 const SupplierDashboard = lazy(() => import('./pages/supplierDashboard'));
 const AdminDashboard = lazy(() => import('./pages/adminDashboard'));
 
@@ -201,6 +203,13 @@ function AppRoutes() {
           <Route path="/reports" element={
             <Suspense fallback={<RouteLoading />}>
               <Reports />
+            </Suspense>
+          } />
+
+          {/* Modern Production Dashboard route */}
+          <Route path="/ProductionManagerDashboard" element={
+            <Suspense fallback={<RouteLoading />}>
+              <ModernProductionDashboard />
             </Suspense>
           } />
         </Route>

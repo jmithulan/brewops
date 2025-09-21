@@ -6,6 +6,9 @@ import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import ProfileMenu from './ProfileMenu';
 
+// Backend URL configuration
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+
 // Keep a singleton socket instance to avoid rapid create/destroy cycles
 // (React StrictMode in development can mount/unmount components twice).
 let socketInstance = null;
@@ -39,7 +42,7 @@ const NavigationBar = ({ onMenuClick }) => {
     // Reuse singleton socket to avoid close-before-open
     if (!socketInstance) {
       try {
-        socketInstance = io('http://localhost:5000', {
+        socketInstance = io(BACKEND_URL, {
           transports: ['websocket'],
           reconnectionAttempts: 5,
           reconnectionDelayMax: 5000,
@@ -154,7 +157,7 @@ const NavigationBar = ({ onMenuClick }) => {
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('jwtToken');
-      const res = await axios.get('http://localhost:5000/api/profile', { 
+      const res = await axios.get(`${BACKEND_URL}/api/profile`, { 
         headers: { Authorization: `Bearer ${token}` }
       });
       // Adjust for backend response structure
@@ -174,7 +177,7 @@ const NavigationBar = ({ onMenuClick }) => {
   fetchNotifications._lastCalled = Date.now();
     try {
       const token = localStorage.getItem('jwtToken');
-      const res = await axios.get('http://localhost:5000/api/notifications', {
+      const res = await axios.get(`${BACKEND_URL}/api/notifications`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -208,7 +211,7 @@ const NavigationBar = ({ onMenuClick }) => {
   fetchMessages._lastCalled = Date.now();
     try {
       const token = localStorage.getItem('jwtToken');
-      const res = await axios.get('http://localhost:5000/api/messages', {
+      const res = await axios.get(`${BACKEND_URL}/api/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -234,7 +237,7 @@ const NavigationBar = ({ onMenuClick }) => {
     try {
       const token = localStorage.getItem('jwtToken');
       // Use a wildcard search to get all users
-      const res = await axios.get('http://localhost:5000/api/messages/search-users?query=a', {
+      const res = await axios.get(`${BACKEND_URL}/api/messages/search-users?query=a`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -254,7 +257,7 @@ const NavigationBar = ({ onMenuClick }) => {
   const fetchChatHistory = async (userId) => {
     try {
       const token = localStorage.getItem('jwtToken');
-      const res = await axios.get(`http://localhost:5000/api/messages/chat/${userId}`, {
+      const res = await axios.get(`${BACKEND_URL}/api/messages/chat/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -280,7 +283,7 @@ const NavigationBar = ({ onMenuClick }) => {
       }
       
       const token = localStorage.getItem('jwtToken');
-      await axios.patch(`http://localhost:5000/api/notifications/${notificationId}/read`, {}, {
+      await axios.patch(`${BACKEND_URL}/api/notifications/${notificationId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -305,7 +308,7 @@ const NavigationBar = ({ onMenuClick }) => {
       }
       
       const token = localStorage.getItem('jwtToken');
-      await axios.patch(`http://localhost:5000/api/messages/${messageId}/read`, {}, {
+      await axios.patch(`${BACKEND_URL}/api/messages/${messageId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -326,7 +329,7 @@ const NavigationBar = ({ onMenuClick }) => {
 
     try {
       const token = localStorage.getItem('jwtToken');
-      const res = await axios.post('http://localhost:5000/api/messages/send', {
+      const res = await axios.post(`${BACKEND_URL}/api/messages/send`, {
         receiverId: selectedUser.id,
         message: messageText.trim()
       }, {

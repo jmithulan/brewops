@@ -7,10 +7,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import Footer from '../components/Footer';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { BsInfoCircle } from 'react-icons/bs';
-import { MdOutlineAddBox, MdOutlineDelete } from 'react-icons/md';
+import { MdOutlineAddBox } from 'react-icons/md';
 import { FaBoxOpen, FaTrashAlt, FaEdit, FaPlusCircle } from 'react-icons/fa';
 import Spinner from '../components/Spinner';
-import NavigationBar from '../components/navigationBar';
+import { inventoryService } from '../services/inventoryService';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -23,6 +23,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { useAuth } from '../contexts/authcontext';
 
 ChartJS.register(
   CategoryScale, 
@@ -36,6 +37,7 @@ ChartJS.register(
 );
 
 const Home = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [originalInventory, setOriginalInventory] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [visibleCount, setVisibleCount] = useState(10);
@@ -48,6 +50,36 @@ const Home = () => {
   const lowInventoryToastShown = useRef(false);
   const chartRef = useRef(null);
   const location = useLocation();
+
+  // Function to fetch inventory data
+  const fetchInventoryData = async () => {
+    setLoading(true);
+    try {
+      const response = await inventoryService.getInventories();
+      console.log('Full API response:', response); // Debug log
+      // Always extract inventories from response.data.inventories
+      const inventories = (response && response.inventories) ? response.inventories : (response && response.data && response.data.inventories ? response.data.inventories : []);
+      console.log('Extracted inventories:', inventories); // Debug log
+      if (!Array.isArray(inventories)) {
+        setOriginalInventory([]);
+        setInventory([]);
+        setVisibleCount(10);
+        setLoading(false);
+        toast.error('Inventory data is not in expected format.');
+        return;
+      }
+      // sort newest first by createdAt
+      inventories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setOriginalInventory(inventories);
+      setInventory(inventories);
+      setVisibleCount(10);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching inventory data:', error);
+      toast.error('Failed to fetch inventory data. Please try again.');
+      setLoading(false);
+    }
+  };
 
   // Cleanup effect to destroy chart instances when chart type changes
   useEffect(() => {
@@ -63,7 +95,8 @@ const Home = () => {
   const sendLowInventoryNotification = async (total) => {
     try {
       const token = localStorage.getItem('jwtToken');
-      await axios.post('http://localhost:5000/api/notifications', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+      await axios.post(`${backendUrl}/api/notifications`, {
         title: 'Low Raw Leaves Inventory',
         body: `Raw leaves inventory is below 10,000 kg. Current total: ${total} kg.`,
         // backend may accept additional fields like recipientRole or meta; adjust if needed
@@ -79,32 +112,35 @@ const Home = () => {
     setLoading(true);
   }, []);
 
+
   useEffect(() => {
-    setLoading(true);
-    axios.get('http://localhost:5000/inventory')
-      .then((response) => {
-        const inventories = response.data.data || [];
-        // sort newest first by createdAt
-        inventories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setOriginalInventory(inventories);
-        setInventory(inventories);
-        setVisibleCount(10);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  }, []);
+    if (!authLoading && isAuthenticated()) {
+      fetchInventoryData();
+    }
+  }, [authLoading, isAuthenticated, location]);
+
+  // Always fetch inventory data when the page/tab is focused
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!authLoading && isAuthenticated()) {
+        fetchInventoryData();
+      }
+    };
+    window.addEventListener('focus', handleVisibility);
+    return () => window.removeEventListener('focus', handleVisibility);
+  }, [authLoading, isAuthenticated]);
 
   const handleSearch = () => {
-    if (searchInput.trim() === '') {
+    if (typeof searchInput !== 'string' || searchInput.trim() === '') {
       setInventory(originalInventory);
       setVisibleCount(10);
     } else {
-      const filtered = originalInventory.filter(item =>
-        item.inventoryid && item.inventoryid.toLowerCase().includes(searchInput.toLowerCase())
-      );
+      const filtered = originalInventory.filter(item => {
+        if (typeof item.inventoryid === 'string' && typeof searchInput === 'string') {
+          return item.inventoryid.toLowerCase().includes(searchInput.toLowerCase());
+        }
+        return false;
+      });
       setInventory(filtered);
       setVisibleCount(10);
     }
@@ -413,22 +449,25 @@ const handleReportGeneration = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavigationBar />
       {/* Layout with Sidebar */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="bg-gray-800 text-white w-64 h-screen p-6 space-y-4 sticky top-0">
-          <Link to="/inventories" className="flex items-center gap-2 px-4 py-2 rounded bg-green-600 bg-opacity-40 text-sm font-medium">
-            <FaBoxOpen /> Inventory
+  <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
+          <Link to="/inventories" className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium">
+            <FaBoxOpen className="text-lg" />
+            <span>Inventory Management</span>
           </Link>
-          <Link to="/waste-management" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
-            <FaTrashAlt /> Waste Management
+          <Link to="/ProductionManagerDashboard" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
+            <FaEdit className="text-lg" />
+            <span>Dashboard</span>
           </Link>
-          <Link to="/Production" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
-            <FaEdit /> Production
+          <Link to="/Production" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
+            <FaEdit className="text-lg" />
+            <span>Production</span>
           </Link>
-          <Link to="/rawleaves" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
-            <FaPlusCircle /> Raw Leaves Management
+          <Link to="/inventories/create" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
+            <FaPlusCircle className="text-lg" />
+            <span>Add Inventory</span>
           </Link>
         </aside>
 
@@ -447,11 +486,18 @@ const handleReportGeneration = () => {
               <button onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900">
                 Search
               </button>
+              <button 
+                onClick={fetchInventoryData} 
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                disabled={loading}
+              >
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
               <button onClick={handleReportGeneration} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900">
                 Generate Report
               </button>
               <Link
-                to="/inventory/creates"
+                to="/inventories/new"
                 state={{ background: location }}
                 className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900"
               >
@@ -515,15 +561,13 @@ const handleReportGeneration = () => {
                       </td>
                       <td className="px-6 py-3">
                         <div className="flex gap-4">
-                          <Link to={`/inventory/${item.id}`} state={{ background: location }} className="text-green-700 text-xl">
+                          <Link to={`/inventories/${item.id}`} state={{ background: location }} className="text-green-700 text-xl">
                             <BsInfoCircle />
                           </Link>
-                          <Link to={`/inventory/edit/${item.id}`} state={{ background: location }} className="text-yellow-600 text-xl">
+                          <Link to={`/inventories/edit/${item.id}`} state={{ background: location }} className="text-yellow-600 text-xl">
                             <AiOutlineEdit />
                           </Link>
-                          <Link to={`/inventory/delete/${item.id}`} state={{ background: location }} className="text-red-600 text-xl">
-                            <MdOutlineDelete />
-                          </Link>
+                          {/* Delete button removed as requested */}
                         </div>
                       </td>
                     </tr>

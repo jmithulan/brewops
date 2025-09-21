@@ -1,7 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { inventoryService } from '../services/inventoryService';
 import Spinner from '../components/Spinner';
+import NavigationBar from '../components/navigationBar';
+import Footer from '../components/Footer';
+import { FaBoxOpen, FaEdit, FaPlusCircle } from 'react-icons/fa';
 
 const ShowInventory = () => {
   const [inventory, setInventory] = useState({});
@@ -14,11 +18,10 @@ const ShowInventory = () => {
       console.error('No ID provided for fetching inventory.');
       return;
     }
-
     setLoading(true);
-    axios.get(`http://localhost:5000/inventory/${id}`) // Ensure correct ID is passed
-      .then((response) => {
-        setInventory(response.data.data);
+    inventoryService.getInventoryById(id)
+      .then((data) => {
+        setInventory(data);
         setLoading(false);
       })
       .catch((error) => {
@@ -29,36 +32,62 @@ const ShowInventory = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Modal backdrop */}
-  <div className='fixed inset-0 bg-black/60 flex items-center justify-center z-50' onClick={() => navigate('/inventories')}>
-        <div className="mt-6 bg-white p-8 rounded-lg shadow-md max-w-xl w-full mx-4" onClick={(e) => e.stopPropagation()}>
-          {loading ? (
-            <Spinner />
-          ) : (
-            <>
-              <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Inventory Details</h2>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="font-medium text-gray-700">Inventory ID:</span>
-                  <span className="text-gray-900 font-mono font-bold">{inventory.inventoryid}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="font-medium text-gray-700">Quantity:</span>
-                  <span className="text-gray-900 font-semibold">{inventory.quantity} kg</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-200">
-                  <span className="font-medium text-gray-700">Created At:</span>
-                  <span className="text-gray-900">{inventory.createdAt ? new Date(inventory.createdAt).toLocaleString() : 'N/A'}</span>
-                </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="font-medium text-gray-700">Updated At:</span>
-                  <span className="text-gray-900">{inventory.updatedAt ? new Date(inventory.updatedAt).toLocaleString() : 'N/A'}</span>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+      <NavigationBar />
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
+          <button onClick={() => navigate('/inventories')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
+            <FaBoxOpen className="text-lg" />
+            <span>Inventory Management</span>
+          </button>
+          <button onClick={() => navigate('/ProductionManagerDashboard')} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium w-full">
+            <FaEdit className="text-lg" />
+            <span>Dashboard</span>
+          </button>
+          <button onClick={() => navigate('/Production')} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium w-full">
+            <FaEdit className="text-lg" />
+            <span>Production</span>
+          </button>
+          <button onClick={() => {}} disabled className="flex items-center space-x-2 p-3 rounded-lg bg-gray-700 text-base font-medium w-full cursor-not-allowed opacity-60">
+            <FaPlusCircle className="text-lg" />
+            <span>Add Inventory</span>
+          </button>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 p-8 overflow-auto bg-white min-h-screen flex items-center justify-center">
+          <div className="w-full max-w-xl flex flex-col items-center justify-center">
+            <div className="w-full bg-white rounded-lg shadow-lg p-8">
+              {loading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Inventory Details</h2>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="font-medium text-gray-700">Inventory ID:</span>
+                      <span className="text-gray-900 font-mono font-bold">{inventory.inventoryid}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="font-medium text-gray-700">Quantity:</span>
+                      <span className="text-gray-900 font-semibold">{inventory.quantity} kg</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="font-medium text-gray-700">Created At:</span>
+                      <span className="text-gray-900">{inventory.createdAt ? new Date(inventory.createdAt).toLocaleString() : 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="font-medium text-gray-700">Updated At:</span>
+                      <span className="text-gray-900">{inventory.updatedAt ? new Date(inventory.updatedAt).toLocaleString() : 'N/A'}</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
+      <Footer />
     </div>
   );
 };

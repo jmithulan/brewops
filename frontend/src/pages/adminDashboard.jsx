@@ -178,6 +178,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      {/* Header Navigation Bar */}
+      <NavigationBar />
       <div className="flex">
         {/* Enhanced Modern Admin Sidebar */}
         <div className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700">

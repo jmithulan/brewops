@@ -277,7 +277,7 @@ const ModernProductionDashboard = () => {
               </Link>
               
               <Link 
-                to="/inventories" 
+                to="/inventory" 
                 onClick={handleNavClick}
                 className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200"
               >

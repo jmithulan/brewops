@@ -20,8 +20,19 @@ const EditInventory = () => {
     setLoading(true);
     inventoryService.getInventoryById(id)
       .then((data) => {
-        setInventoryId(data.inventoryid);
-        setQuantity(data.quantity);
+        // Handle both { success, inventory } and direct inventory object
+        let inv = null;
+        if (data && data.success && data.inventory) {
+          inv = data.inventory;
+        } else if (data && data.inventoryid) {
+          inv = data;
+        }
+        if (inv) {
+          setInventoryId(inv.inventoryid);
+          setQuantity(inv.quantity);
+        } else {
+          toast.error('Inventory not found.');
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -47,9 +58,10 @@ const EditInventory = () => {
     };
     setLoading(true);
     try {
-      await inventoryService.updateInventory(id, updatedData);
-      setLoading(false);
-      navigate('/inventories');
+        await inventoryService.updateInventory(id, updatedData);
+        setLoading(false);
+        // Use setTimeout to ensure loading spinner is cleared before navigation
+        setTimeout(() => navigate('/inventory'), 10);
     } catch (err) {
       console.error(err);
       setLoading(false);
@@ -59,11 +71,10 @@ const EditInventory = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <NavigationBar />
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
-          <button onClick={() => navigate('/inventories')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
+          <button onClick={() => navigate('/inventory')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
             <FaBoxOpen className="text-lg" />
             <span>Inventory Management</span>
           </button>
@@ -120,12 +131,12 @@ const EditInventory = () => {
 
                   <div className='flex gap-4'>
                     <button
-                      type="submit"
-                      className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-black transition duration-300"
+                      type="submit" onClick={handleUpdate} className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-black transition duration-300"
+                      
                     >
                       Save Changes
                     </button>
-                    <button type="button" onClick={() => navigate('/inventories')} className='bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded-md'>Cancel</button>
+                      <button type="button" onClick={() => navigate('/inventory')} className='bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded-md'>Cancel</button>
                   </div>
                 </form>
               )}

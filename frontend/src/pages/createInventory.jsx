@@ -64,7 +64,7 @@ const CreateInventory = () => {
       } else {
         toast.success('Inventory created successfully!');
       }
-      setTimeout(() => navigate('/inventories'), 1000);
+      setTimeout(() => navigate('/inventory'), 1000);
     } catch (error) {
       setLoading(false);
       toast.error('Failed to create inventory.');
@@ -95,7 +95,7 @@ const CreateInventory = () => {
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
-          <button onClick={() => navigate('/inventories')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
+          <button onClick={() => navigate('/inventory')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
             <FaBoxOpen className="text-lg" />
             <span>Inventory Management</span>
           </button>
@@ -151,7 +151,7 @@ const CreateInventory = () => {
 
                   <div className="flex gap-4">
                     <button
-                      type="submit"
+                      type="submit" onClick={() => handleSaveInventory()}
                       className="py-2 px-6 bg-green-600 text-white rounded-md hover:bg-black focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={loading || quantityError || !quantity}
                     >
@@ -161,7 +161,7 @@ const CreateInventory = () => {
                     <button
                       type="button"
                       className="py-2 px-6 bg-gray-500 text-white rounded-md hover:bg-gray-700 focus:outline-none"
-                      onClick={() => navigate('/inventories')}
+                      onClick={() => navigate('/inventory')}
                     >
                       Cancel
                     </button>

@@ -36,36 +36,41 @@ connectDB()
   .catch((err) => console.error("MySQL connection error:", err));
 
 // CORS configuration for frontend integration
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-    
-    // Check if origin matches allowed patterns
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-      "http://localhost:5177",
-      "http://localhost:5191"
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost')) {
-      callback(null, true);
-    } else {
-      console.warn(`Origin ${origin} not allowed by CORS`);
-      callback(null, false);
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      // Check if origin matches allowed patterns
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://localhost:5176",
+        "http://localhost:5177",
+        "http://localhost:5191",
+      ];
+
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.startsWith("http://localhost")
+      ) {
+        callback(null, true);
+      } else {
+        console.warn(`Origin ${origin} not allowed by CORS`);
+        callback(null, false);
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
 // Special handling for Stripe webhook endpoint (needs raw body)
-app.use('/api/orders/webhook', express.raw({ type: 'application/json' }));
+app.use("/api/orders/webhook", express.raw({ type: "application/json" }));
 
 // Regular JSON body parser for all other routes
 app.use(bodyParser.json());
@@ -153,18 +158,22 @@ app.use((req, res, next) => {
   if (tokenString != null) {
     const token = tokenString.replace("Bearer ", "");
 
-    jwt.verify(token, process.env.JWT_KEY || "your_jwt_secret_key_here", (err, decoded) => {
-      if (decoded != null) {
-        console.log(decoded);
-        req.user = decoded;
-        next();
-      } else {
-        console.log("Token is not provided");
-        res.status(403).json({
-          message: "Token is not provided",
-        });
+    jwt.verify(
+      token,
+      process.env.JWT_KEY || "your_jwt_secret_key_here",
+      (err, decoded) => {
+        if (decoded != null) {
+          console.log(decoded);
+          req.user = decoded;
+          next();
+        } else {
+          console.log("Token is not provided");
+          res.status(403).json({
+            message: "Token is not provided",
+          });
+        }
       }
-    });
+    );
   } else {
     next();
   }
@@ -190,10 +199,10 @@ app.use("/api/orders", orderRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: function(origin, callback) {
+    origin: function (origin, callback) {
       // Allow requests with no origin
       if (!origin) return callback(null, true);
-      
+
       // Check if origin matches allowed patterns
       const allowedOrigins = [
         process.env.FRONTEND_URL,
@@ -202,10 +211,13 @@ const io = new Server(server, {
         "http://localhost:5175",
         "http://localhost:5176",
         "http://localhost:5177",
-        "http://localhost:5191"
+        "http://localhost:5191",
       ];
-      
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost')) {
+
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.startsWith("http://localhost")
+      ) {
         callback(null, true);
       } else {
         console.warn(`Origin ${origin} not allowed by Socket.IO CORS`);
@@ -213,31 +225,35 @@ const io = new Server(server, {
       }
     },
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true,
   },
 });
 
 // Make io available in Express routes
-app.set('io', io);
+app.set("io", io);
 
 // Authentication middleware for Socket.IO
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token;
-    
+
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
     }
-    
-    jwt.verify(token, process.env.JWT_KEY || "your_jwt_secret_key_here", (err, decoded) => {
-      if (err) {
-        return next(new Error("Authentication error: Invalid token"));
+
+    jwt.verify(
+      token,
+      process.env.JWT_KEY || "your_jwt_secret_key_here",
+      (err, decoded) => {
+        if (err) {
+          return next(new Error("Authentication error: Invalid token"));
+        }
+
+        // Add user data to socket
+        socket.user = decoded;
+        next();
       }
-      
-      // Add user data to socket
-      socket.user = decoded;
-      next();
-    });
+    );
   } catch (error) {
     next(new Error("Authentication error: " + error.message));
   }
@@ -246,35 +262,35 @@ io.use((socket, next) => {
 // Real-time notifications/messages
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id, "User ID:", socket.user?.id);
-  
+
   // Join user to their own room for targeted messages
   if (socket.user?.id) {
     const userId = socket.user.id;
     socket.join(`user_${userId}`);
     console.log(`User ${userId} joined their room`);
-    
+
     // Also join role-based room for role-specific broadcasts
     if (socket.user.role) {
       socket.join(`role_${socket.user.role}`);
       console.log(`User ${userId} joined ${socket.user.role} role room`);
     }
-    
+
     // Notify other users that this user is online
-    socket.broadcast.emit("userStatus", { 
-      userId: userId, 
+    socket.broadcast.emit("userStatus", {
+      userId: userId,
       status: "online",
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
+
     // Send list of online users to the newly connected user
     const onlineUsers = Array.from(io.sockets.sockets.values())
-      .filter(s => s.user?.id)
-      .map(s => ({
+      .filter((s) => s.user?.id)
+      .map((s) => ({
         userId: s.user.id,
         userName: s.user.name,
-        userRole: s.user.role
+        userRole: s.user.role,
       }));
-    
+
     socket.emit("onlineUsers", onlineUsers);
   }
 
@@ -283,43 +299,44 @@ io.on("connection", (socket) => {
     try {
       const { receiverId, message } = data;
       const senderId = socket.user.id;
-      
+
       // Create message record in the database
       const Message = (await import("./models/Message.js")).default;
       const User = (await import("./models/User.js")).default;
       const Notification = (await import("./models/Notification.js")).default;
-      
+
       // Get sender and receiver
       const sender = await User.findById(senderId);
       const receiver = await User.findById(receiverId);
-      
+
       if (!receiver) {
         socket.emit("error", { message: "Receiver not found" });
         return;
       }
-      
+
       // Create the message
       const newMessage = await Message.create({
         sender_id: senderId,
         receiver_id: receiverId,
-        message
+        message,
       });
-      
+
       // Create a notification
       await Notification.create({
         title: `New message from ${sender.name}`,
-        message: message.length > 30 ? `${message.substring(0, 30)}...` : message,
-        type: 'message',
+        message:
+          message.length > 30 ? `${message.substring(0, 30)}...` : message,
+        type: "message",
         recipient_id: receiverId,
-        metadata: JSON.stringify({ 
-          senderId, 
+        metadata: JSON.stringify({
+          senderId,
           messageId: newMessage.id,
           senderName: sender.name,
-          senderRole: sender.role
+          senderRole: sender.role,
         }),
-        priority: 'medium'
+        priority: "medium",
       });
-      
+
       // Emit to the receiver's room
       io.to(`user_${receiverId}`).emit("newMessage", {
         id: newMessage.id,
@@ -327,25 +344,26 @@ io.on("connection", (socket) => {
         senderName: sender.name,
         senderRole: sender.role,
         message,
-        timestamp: newMessage.timestamp || new Date()
+        timestamp: newMessage.timestamp || new Date(),
       });
-      
+
       // Also emit a notification event
       io.to(`user_${receiverId}`).emit("notification", {
-        type: 'message',
+        type: "message",
         title: `New message from ${sender.name}`,
-        message: message.length > 30 ? `${message.substring(0, 30)}...` : message,
+        message:
+          message.length > 30 ? `${message.substring(0, 30)}...` : message,
         senderId,
         senderName: sender.name,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       // Confirm to sender
-      socket.emit("messageSent", { 
+      socket.emit("messageSent", {
         id: newMessage.id,
         receiverId,
         message,
-        timestamp: newMessage.timestamp || new Date()
+        timestamp: newMessage.timestamp || new Date(),
       });
     } catch (error) {
       console.error("Socket send message error:", error);
@@ -358,31 +376,33 @@ io.on("connection", (socket) => {
     try {
       const { messageId } = data;
       const userId = socket.user.id;
-      
+
       const Message = (await import("./models/Message.js")).default;
-      
+
       const message = await Message.findById(messageId);
-      
+
       if (!message) {
         socket.emit("error", { message: "Message not found" });
         return;
       }
-      
+
       // Check if user is the receiver
       if (message.receiver_id !== userId) {
-        socket.emit("error", { message: "Can only mark messages sent to you as read" });
+        socket.emit("error", {
+          message: "Can only mark messages sent to you as read",
+        });
         return;
       }
-      
+
       await Message.markAsRead(messageId);
-      
+
       // Notify sender that their message was read
       io.to(`user_${message.sender_id}`).emit("messageRead", {
         messageId,
         readBy: userId,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       // Confirm to the user who marked the message as read
       socket.emit("messageMarkedRead", { messageId });
     } catch (error) {
@@ -390,21 +410,21 @@ io.on("connection", (socket) => {
       socket.emit("error", { message: "Failed to mark message as read" });
     }
   });
-  
+
   // Handle typing indicator
   socket.on("typing", (data) => {
     const { receiverId, isTyping } = data;
     const userId = socket.user?.id;
-    
+
     if (userId && receiverId) {
       // Emit typing status to the recipient
       io.to(`user_${receiverId}`).emit("userTyping", {
         userId,
-        isTyping
+        isTyping,
       });
     }
   });
-  
+
   // Handle user presence
   socket.on("setStatus", (status) => {
     if (socket.user?.id) {
@@ -412,20 +432,20 @@ io.on("connection", (socket) => {
       socket.broadcast.emit("userStatus", {
         userId: socket.user.id,
         status,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   });
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
-    
+
     // Notify other users that this user went offline
     if (socket.user?.id) {
-      socket.broadcast.emit("userStatus", { 
-        userId: socket.user.id, 
+      socket.broadcast.emit("userStatus", {
+        userId: socket.user.id,
         status: "offline",
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   });

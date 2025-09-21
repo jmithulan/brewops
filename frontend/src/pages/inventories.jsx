@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 import { AiOutlineEdit } from 'react-icons/ai';
 import { BsInfoCircle } from 'react-icons/bs';
 import { MdOutlineAddBox } from 'react-icons/md';
-import { FaBoxOpen, FaTrashAlt, FaEdit, FaPlusCircle } from 'react-icons/fa';
+import { FaBoxOpen, FaTrashAlt, FaEdit, FaPlusCircle, FaTachometerAlt } from 'react-icons/fa';
 import Spinner from '../components/Spinner';
 import { inventoryService } from '../services/inventoryService';
 import { Bar, Line } from 'react-chartjs-2';
@@ -55,7 +55,8 @@ const Home = () => {
   const fetchInventoryData = async () => {
     setLoading(true);
     try {
-      const response = await inventoryService.getInventories();
+      // Pass config to skip caching in axios
+      const response = await inventoryService.getInventories({ skipCaching: true, skipDeduplication: true });
       console.log('Full API response:', response); // Debug log
       // Always extract inventories from response.data.inventories
       const inventories = (response && response.inventories) ? response.inventories : (response && response.data && response.data.inventories ? response.data.inventories : []);
@@ -453,22 +454,23 @@ const handleReportGeneration = () => {
       <div className="flex flex-1">
         {/* Sidebar */}
   <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
-          <Link to="/inventories" className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium">
+          <Link to="/inventory" className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium">
             <FaBoxOpen className="text-lg" />
             <span>Inventory Management</span>
           </Link>
           <Link to="/ProductionManagerDashboard" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
-            <FaEdit className="text-lg" />
+            <FaTachometerAlt className="text-lg" />
             <span>Dashboard</span>
           </Link>
           <Link to="/Production" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
             <FaEdit className="text-lg" />
             <span>Production</span>
           </Link>
-          <Link to="/inventories/create" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
+          <Link to="/inventory/new" className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-700 text-base font-medium">
             <FaPlusCircle className="text-lg" />
             <span>Add Inventory</span>
           </Link>
+
         </aside>
 
         {/* Main Content */}
@@ -497,7 +499,7 @@ const handleReportGeneration = () => {
                 Generate Report
               </button>
               <Link
-                to="/inventories/new"
+                to="/inventory/new"
                 state={{ background: location }}
                 className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900"
               >
@@ -561,10 +563,10 @@ const handleReportGeneration = () => {
                       </td>
                       <td className="px-6 py-3">
                         <div className="flex gap-4">
-                          <Link to={`/inventories/${item.id}`} state={{ background: location }} className="text-green-700 text-xl">
+                          <Link to={`/inventory/${item.id}`} state={{ background: location }} className="text-green-700 text-xl">
                             <BsInfoCircle />
                           </Link>
-                          <Link to={`/inventories/edit/${item.id}`} state={{ background: location }} className="text-yellow-600 text-xl">
+                          <Link to={`/inventory/edit/${item.id}`} state={{ background: location }} className="text-yellow-600 text-xl">
                             <AiOutlineEdit />
                           </Link>
                           {/* Delete button removed as requested */}

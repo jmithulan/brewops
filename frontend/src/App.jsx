@@ -40,7 +40,7 @@ const ContactUs = lazy(() => import('./pages/ContactUs'));
 const Register = lazy(() => import('./pages/register'));
 
 // Dashboard pages with preloadable implementation to prevent white screens
-const StaffDashboard = lazy(() => import('./pages/StaffDashboard'));
+const StaffDashboard = lazy(() => import('./pages/staffDashboard'));
 const SupplierDashboard = lazy(() => import('./pages/supplierDashboard'));
 const AdminDashboard = lazy(() => import('./pages/adminDashboard'));
 
@@ -146,27 +146,27 @@ function AppRoutes() {
           } />
           
           {/* Inventory routes */}
-          <Route path="/inventories" element={
+          <Route path="/inventory" element={
             <Suspense fallback={<RouteLoading />}>
               <Inventories />
             </Suspense>
           } />
-          <Route path="/inventories/new" element={
+          <Route path="/inventory/new" element={
             <Suspense fallback={<RouteLoading />}>
               <CreateInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id" element={
+          <Route path="/inventory/:id" element={
             <Suspense fallback={<RouteLoading />}>
               <ShowInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id/edit" element={
+          <Route path="/inventory/edit/:id/" element={
             <Suspense fallback={<RouteLoading />}>
               <EditInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id/delete" element={
+          <Route path="/inventory/:id/delete" element={
             <Suspense fallback={<RouteLoading />}>
               <DeleteInventory />
             </Suspense>

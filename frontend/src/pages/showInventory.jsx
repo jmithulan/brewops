@@ -1,42 +1,53 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { inventoryService } from '../services/inventoryService';
 import Spinner from '../components/Spinner';
-import NavigationBar from '../components/navigationBar';
 import Footer from '../components/Footer';
 import { FaBoxOpen, FaEdit, FaPlusCircle } from 'react-icons/fa';
+import toast from 'react-hot-toast';
+
 
 const ShowInventory = () => {
-  const [inventory, setInventory] = useState({});
+  const [inventory, setInventory] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) {
-      console.error('No ID provided for fetching inventory.');
+      setError('No ID provided for fetching inventory.');
       return;
     }
     setLoading(true);
+    setError('');
     inventoryService.getInventoryById(id)
       .then((data) => {
-        setInventory(data);
+        // Handle both { success, inventory } and direct inventory object
+        if (data && data.success && data.inventory) {
+          setInventory(data.inventory);
+        } else if (data && data.inventoryid) {
+          setInventory(data);
+        } else {
+          setInventory(null);
+          setError('Inventory not found.');
+        }
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching inventory:', error);
+        setError('Error fetching inventory.');
         setLoading(false);
       });
   }, [id]);
 
+
   return (
     <div className="min-h-screen flex flex-col">
-      <NavigationBar />
+      
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700 h-screen p-6 space-y-4 sticky top-0 text-white">
-          <button onClick={() => navigate('/inventories')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
+          <button onClick={() => navigate('/inventory')} className="flex items-center space-x-2 p-3 rounded-lg bg-green-600 bg-opacity-40 text-base font-medium w-full mb-2">
             <FaBoxOpen className="text-lg" />
             <span>Inventory Management</span>
           </button>
@@ -60,7 +71,9 @@ const ShowInventory = () => {
             <div className="w-full bg-white rounded-lg shadow-lg p-8">
               {loading ? (
                 <Spinner />
-              ) : (
+              ) : error ? (
+                <div className="text-red-600 text-center font-semibold py-8">{error}</div>
+              ) : inventory ? (
                 <>
                   <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Inventory Details</h2>
                   <div className="space-y-3">
@@ -82,7 +95,7 @@ const ShowInventory = () => {
                     </div>
                   </div>
                 </>
-              )}
+              ) : null}
             </div>
           </div>
         </main>

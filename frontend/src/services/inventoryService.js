@@ -1,10 +1,10 @@
-import api from './api';
+import api from "./api";
 
 export const inventoryService = {
   // Get all inventories
-  getInventories: async () => {
+  getInventories: async (config = {}) => {
     try {
-      const response = await api.get('/inventory');
+      const response = await api.get("/inventory", config);
       return response.data;
     } catch (error) {
       throw error;
@@ -24,7 +24,7 @@ export const inventoryService = {
   // Create new inventory
   createInventory: async (inventoryData) => {
     try {
-      const response = await api.post('/inventory', inventoryData);
+      const response = await api.post("/inventorY", inventoryData);
       return response.data;
     } catch (error) {
       throw error;
@@ -59,7 +59,15 @@ export const inventoryService = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  // Generate inventory ID
+  generateInventoryId: async () => {
+    try {
+      const response = await api.get("/inventory/generate-inventory-id");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
-
-

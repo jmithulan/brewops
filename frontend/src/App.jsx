@@ -18,6 +18,8 @@ import DiagnosticPage from './pages/DiagnosticPage';
 import EmergencyFallback from './pages/EmergencyFallback';
 import HomePage from './pages/homePage';
 
+import ModernProductionDashboard from './pages/ProductionManagerDashboard';
+
 // Lazy load all other pages to improve initial load time
 const Inventories = lazy(() => import('./pages/inventories'));
 const CreateInventory = lazy(() => import('./pages/createInventory'));
@@ -144,27 +146,27 @@ function AppRoutes() {
           } />
           
           {/* Inventory routes */}
-          <Route path="/inventories" element={
+          <Route path="/inventory" element={
             <Suspense fallback={<RouteLoading />}>
               <Inventories />
             </Suspense>
           } />
-          <Route path="/inventories/new" element={
+          <Route path="/inventory/new" element={
             <Suspense fallback={<RouteLoading />}>
               <CreateInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id" element={
+          <Route path="/inventory/:id" element={
             <Suspense fallback={<RouteLoading />}>
               <ShowInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id/edit" element={
+          <Route path="/inventory/edit/:id/" element={
             <Suspense fallback={<RouteLoading />}>
               <EditInventory />
             </Suspense>
           } />
-          <Route path="/inventories/:id/delete" element={
+          <Route path="/inventory/:id/delete" element={
             <Suspense fallback={<RouteLoading />}>
               <DeleteInventory />
             </Suspense>
@@ -201,6 +203,13 @@ function AppRoutes() {
           <Route path="/reports" element={
             <Suspense fallback={<RouteLoading />}>
               <Reports />
+            </Suspense>
+          } />
+
+          {/* Modern Production Dashboard route */}
+          <Route path="/ProductionManagerDashboard" element={
+            <Suspense fallback={<RouteLoading />}>
+              <ModernProductionDashboard />
             </Suspense>
           } />
         </Route>

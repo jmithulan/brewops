@@ -2,10 +2,7 @@ import { db } from "../config/db.js";
 
 export default class Inventory {
   static async create(inventoryData) {
-    const {
-      inventoryid,
-      quantity
-    } = inventoryData;
+    const { inventoryid, quantity } = inventoryData;
 
     const [result] = await db.execute(
       `INSERT INTO inventory (inventoryid, quantity) VALUES (?, ?)`,
@@ -16,10 +13,9 @@ export default class Inventory {
   }
 
   static async findById(id) {
-    const [rows] = await db.execute(
-      `SELECT * FROM inventory WHERE id = ?`,
-      [id]
-    );
+    const [rows] = await db.execute(`SELECT * FROM inventory WHERE id = ?`, [
+      id,
+    ]);
     return rows[0];
   }
 
@@ -44,7 +40,7 @@ export default class Inventory {
     const fields = [];
     const values = [];
 
-    Object.keys(updateData).forEach(key => {
+    Object.keys(updateData).forEach((key) => {
       if (updateData[key] !== undefined) {
         fields.push(`${key} = ?`);
         values.push(updateData[key]);
@@ -52,12 +48,14 @@ export default class Inventory {
     });
 
     if (fields.length === 0) {
-      throw new Error('No fields to update');
+      throw new Error("No fields to update");
     }
 
     values.push(id);
     const [result] = await db.execute(
-      `UPDATE inventory SET ${fields.join(', ')}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`,
+      `UPDATE inventory SET ${fields.join(
+        ", "
+      )}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`,
       values
     );
 
@@ -65,17 +63,16 @@ export default class Inventory {
   }
 
   static async delete(id) {
-    const [result] = await db.execute(
-      'DELETE FROM inventory WHERE id = ?',
-      [id]
-    );
+    const [result] = await db.execute("DELETE FROM inventory WHERE id = ?", [
+      id,
+    ]);
     return result.affectedRows > 0;
   }
 
   static async generateInventoryId() {
     const date = new Date();
-    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-    const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, '');
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
+    const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, "");
     return `INV-${dateStr}-${timeStr}`;
   }
 
@@ -103,11 +100,7 @@ export default class Inventory {
   }
 
   static async count() {
-    const [rows] = await db.execute('SELECT COUNT(*) as count FROM inventory');
+    const [rows] = await db.execute("SELECT COUNT(*) as count FROM inventory");
     return rows[0].count;
   }
 }
-
-
-
-

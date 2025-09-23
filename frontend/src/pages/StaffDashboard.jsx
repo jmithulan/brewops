@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import NavigationBar from '../components/navigationBar';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { 
@@ -29,6 +28,7 @@ import {
 import { MdDashboard, MdTrendingUp, MdTrendingDown } from 'react-icons/md';
 import { LineChart, BarChart, PieChart, AreaChart, Line, Bar, Pie, Area, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
+import NavigationBar from '../components/navigationBar';
 
 export default function StaffDashboard() {
   // Dashboard state
@@ -192,6 +192,7 @@ export default function StaffDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <NavigationBar />
       <div className="flex">
         {/* Enhanced Modern Staff Sidebar */}
         <div className="w-80 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-2xl border-r border-gray-700">

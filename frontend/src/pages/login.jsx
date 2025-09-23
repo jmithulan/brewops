@@ -93,7 +93,7 @@ export default function LoginPage() {
         // Show customized message based on role
         let roleDisplay = "User";
         let redirectPath = "/dashboard";
-        
+
         if (result.effectiveRole === "admin" && result.role === "manager") {
           roleDisplay = "Manager (with Admin access)";
           redirectPath = "/admin-dashboard";
@@ -106,8 +106,16 @@ export default function LoginPage() {
         } else if (result.role === "supplier") {
           roleDisplay = "Supplier";
           redirectPath = "/supplier-dashboard";
+        } else if (
+          result.role !== "admin" &&
+          result.role !== "manager" &&
+          result.role !== "staff" &&
+          result.role !== "supplier"
+        ) {
+          roleDisplay = "Production Manager";
+          redirectPath = "/ProductionManagerDashboard";
         }
-        
+
         // Show success message
         toast.success(`Welcome back, ${result.user?.name || ""}! Logged in as ${roleDisplay}`, {
           duration: 3000,

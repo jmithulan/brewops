@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { generateAndDownloadReport } from '../utils/reportGenerator';
 import { format } from 'date-fns';
 import axios from 'axios';
-<<<<<<< HEAD
-=======
 import { handleSuccess, handleApiError } from '../utils/errorHandler.jsx';
->>>>>>> b34fc7b (init)
 
 const ReportGenerator = ({ type = 'inventory' }) => {
   const [reportPeriod, setReportPeriod] = useState('current');
@@ -17,13 +14,10 @@ const ReportGenerator = ({ type = 'inventory' }) => {
       title: 'Inventory Report',
       description: 'Generate a comprehensive report of current inventory levels, low stock alerts, and inventory trends.',
       endpoints: {
-<<<<<<< HEAD
         current: '/api/reports/inventory/daily/',
         monthly: '/api/reports/inventory/monthly/'
-=======
         current: '/api/reports/inventory',
         monthly: '/api/reports/inventory'
->>>>>>> b34fc7b (init)
       }
     },
     supplier: {
@@ -43,11 +37,8 @@ const ReportGenerator = ({ type = 'inventory' }) => {
       title: 'Dashboard Report',
       description: 'Generate an executive summary report with key metrics from all areas of operations.',
       endpoints: {
-<<<<<<< HEAD
         current: '/api/reports/dashboard'
-=======
         current: '/api/reports/summary'
->>>>>>> b34fc7b (init)
       }
     }
   };
@@ -59,7 +50,6 @@ const ReportGenerator = ({ type = 'inventory' }) => {
     setError(null);
     
     try {
-<<<<<<< HEAD
       let endpoint;
       let params = {};
       const today = new Date();
@@ -73,7 +63,6 @@ const ReportGenerator = ({ type = 'inventory' }) => {
       } else if (reportPeriod === '7d' || reportPeriod === '30d' || reportPeriod === '90d') {
         endpoint = reportType.endpoints.current;
         params = { period: reportPeriod };
-=======
       let endpoint = reportType.endpoints.current;
       let params = { format: 'pdf' }; // Request PDF format
       const today = new Date();
@@ -92,12 +81,10 @@ const ReportGenerator = ({ type = 'inventory' }) => {
         const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         params.startDate = startDate.toISOString().split('T')[0];
         params.endDate = endDate.toISOString().split('T')[0];
->>>>>>> b34fc7b (init)
       }
       
       // Get the token from localStorage
       const token = localStorage.getItem('jwtToken');
-<<<<<<< HEAD
       
       // Make the API request
       const response = await axios.get(endpoint, {
@@ -117,7 +104,6 @@ const ReportGenerator = ({ type = 'inventory' }) => {
     } finally {
       setIsLoading(false);
     }
-=======
       const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
       
       // Make the API request
@@ -145,7 +131,6 @@ const ReportGenerator = ({ type = 'inventory' }) => {
         } finally {
           setIsLoading(false);
         }
->>>>>>> b34fc7b (init)
   };
   
   return (

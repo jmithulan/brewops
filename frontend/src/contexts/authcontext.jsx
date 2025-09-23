@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+<<<<<<< HEAD
+=======
+import { handleSuccess, handleApiError } from '../utils/errorHandler.jsx';
+>>>>>>> b34fc7b (init)
 
 const AuthContext = createContext();
 
@@ -422,6 +426,80 @@ export const AuthProvider = ({ children }) => {
     return permissionList.some(permission => permissions.includes(permission));
   };
 
+<<<<<<< HEAD
+=======
+  /**
+   * Update user profile
+   */
+  const updateProfile = async (formData) => {
+    try {
+      const response = await axios.put(`${API_URL}/api/profile`, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setUser(response.data.profile);
+        return { success: true, user: response.data.profile };
+      } else {
+        throw new Error(response.data.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update profile';
+      throw new Error(errorMessage);
+    }
+  };
+
+  /**
+   * Change user password
+   */
+  const changePassword = async (passwordData) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/profile/change-password`, passwordData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        return { success: true };
+      } else {
+        throw new Error(response.data.message || 'Failed to change password');
+      }
+        } catch (error) {
+          handleApiError(error, 'Failed to change password');
+          throw new Error(error.response?.data?.message || error.message || 'Failed to change password');
+        }
+  };
+
+  /**
+   * Upload profile image
+   */
+  const uploadProfileImage = async (imageData) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/profile/upload-avatar`, imageData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        setUser(response.data.profile);
+        return { success: true, user: response.data.profile };
+      } else {
+        throw new Error(response.data.message || 'Failed to upload profile image');
+      }
+    } catch (error) {
+      console.error('Profile image upload error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to upload profile image';
+      throw new Error(errorMessage);
+    }
+  };
+
+>>>>>>> b34fc7b (init)
   // Provide authentication context values
   const value = {
     user,
@@ -437,6 +515,12 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     hasPermission,
     hasAnyPermission,
+<<<<<<< HEAD
+=======
+    updateProfile,
+    changePassword,
+    uploadProfileImage,
+>>>>>>> b34fc7b (init)
     setUser,
     setToken
   };

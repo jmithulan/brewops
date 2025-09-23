@@ -144,3 +144,9 @@ export const SkeletonTable = (props) => <SkeletonLoader variant="table" {...prop
 export const SkeletonList = (props) => <SkeletonLoader variant="list" {...props} />;
 
 export default SkeletonLoader;
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> b34fc7b (init)

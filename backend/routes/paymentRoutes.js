@@ -30,4 +30,25 @@ router.get("/summary/:supplier_id", getPaymentSummary);
 router.get("/reports/daily/:date", getDailyPaymentReport);
 router.get("/reports/monthly/:year/:month", getMonthlyPaymentReport);
 
+<<<<<<< HEAD
+=======
+// Additional routes for missing endpoints
+router.get("/statistics", authenticateToken, async (req, res) => {
+  try {
+    const { date_from, date_to } = req.query;
+    const filters = {};
+    if (date_from) filters.date_from = date_from;
+    if (date_to) filters.date_to = date_to;
+    
+    const payments = await getAllPayments({ query: { ...filters, limit: 1000 } }, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+});
+
+>>>>>>> b34fc7b (init)
 export default router;

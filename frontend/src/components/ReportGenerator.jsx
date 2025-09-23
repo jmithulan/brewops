@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { generateAndDownloadReport } from '../utils/reportGenerator';
 import { format } from 'date-fns';
 import axios from 'axios';
+<<<<<<< HEAD
+=======
+import { handleSuccess, handleApiError } from '../utils/errorHandler.jsx';
+>>>>>>> b34fc7b (init)
 
 const ReportGenerator = ({ type = 'inventory' }) => {
   const [reportPeriod, setReportPeriod] = useState('current');
@@ -13,23 +17,37 @@ const ReportGenerator = ({ type = 'inventory' }) => {
       title: 'Inventory Report',
       description: 'Generate a comprehensive report of current inventory levels, low stock alerts, and inventory trends.',
       endpoints: {
+<<<<<<< HEAD
         current: '/api/reports/inventory/daily/',
         monthly: '/api/reports/inventory/monthly/'
+=======
+        current: '/api/reports/inventory',
+        monthly: '/api/reports/inventory'
+>>>>>>> b34fc7b (init)
       }
     },
     supplier: {
       title: 'Supplier Report',
       description: 'Generate a detailed report of supplier activities, deliveries, and payment status.',
       endpoints: {
+<<<<<<< HEAD
         current: '/api/reports/suppliers/daily/',
         monthly: '/api/reports/suppliers/monthly/'
+=======
+        current: '/api/reports/supplies',
+        monthly: '/api/reports/supplies'
+>>>>>>> b34fc7b (init)
       }
     },
     dashboard: {
       title: 'Dashboard Report',
       description: 'Generate an executive summary report with key metrics from all areas of operations.',
       endpoints: {
+<<<<<<< HEAD
         current: '/api/reports/dashboard'
+=======
+        current: '/api/reports/summary'
+>>>>>>> b34fc7b (init)
       }
     }
   };
@@ -41,6 +59,7 @@ const ReportGenerator = ({ type = 'inventory' }) => {
     setError(null);
     
     try {
+<<<<<<< HEAD
       let endpoint;
       let params = {};
       const today = new Date();
@@ -54,10 +73,31 @@ const ReportGenerator = ({ type = 'inventory' }) => {
       } else if (reportPeriod === '7d' || reportPeriod === '30d' || reportPeriod === '90d') {
         endpoint = reportType.endpoints.current;
         params = { period: reportPeriod };
+=======
+      let endpoint = reportType.endpoints.current;
+      let params = { format: 'pdf' }; // Request PDF format
+      const today = new Date();
+      
+      // Add date parameters based on period
+      if (reportPeriod === '7d') {
+        const startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = today.toISOString().split('T')[0];
+      } else if (reportPeriod === '30d') {
+        const startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = today.toISOString().split('T')[0];
+      } else if (reportPeriod === 'monthly') {
+        const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = endDate.toISOString().split('T')[0];
+>>>>>>> b34fc7b (init)
       }
       
       // Get the token from localStorage
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       
       // Make the API request
       const response = await axios.get(endpoint, {
@@ -77,6 +117,35 @@ const ReportGenerator = ({ type = 'inventory' }) => {
     } finally {
       setIsLoading(false);
     }
+=======
+      const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+      
+      // Make the API request
+      const response = await axios.get(`${API_URL}${endpoint}`, {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob' // Important for PDF download
+      });
+      
+      // Create blob and download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${type}_report_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+        } catch (err) {
+          console.error('Error generating report:', err);
+          handleApiError(err, 'Failed to generate the report. Please try again later.');
+          setError('Failed to generate the report. Please try again later.');
+        } finally {
+          setIsLoading(false);
+        }
+>>>>>>> b34fc7b (init)
   };
   
   return (

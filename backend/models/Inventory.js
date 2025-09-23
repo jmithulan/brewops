@@ -2,7 +2,14 @@ import { db } from "../config/db.js";
 
 export default class Inventory {
   static async create(inventoryData) {
+<<<<<<< HEAD
     const { inventoryid, quantity } = inventoryData;
+=======
+    const {
+      inventoryid,
+      quantity
+    } = inventoryData;
+>>>>>>> b34fc7b (init)
 
     const [result] = await db.execute(
       `INSERT INTO inventory (inventoryid, quantity) VALUES (?, ?)`,
@@ -13,9 +20,16 @@ export default class Inventory {
   }
 
   static async findById(id) {
+<<<<<<< HEAD
     const [rows] = await db.execute(`SELECT * FROM inventory WHERE id = ?`, [
       id,
     ]);
+=======
+    const [rows] = await db.execute(
+      `SELECT * FROM inventory WHERE id = ?`,
+      [id]
+    );
+>>>>>>> b34fc7b (init)
     return rows[0];
   }
 
@@ -40,7 +54,11 @@ export default class Inventory {
     const fields = [];
     const values = [];
 
+<<<<<<< HEAD
     Object.keys(updateData).forEach((key) => {
+=======
+    Object.keys(updateData).forEach(key => {
+>>>>>>> b34fc7b (init)
       if (updateData[key] !== undefined) {
         fields.push(`${key} = ?`);
         values.push(updateData[key]);
@@ -48,14 +66,22 @@ export default class Inventory {
     });
 
     if (fields.length === 0) {
+<<<<<<< HEAD
       throw new Error("No fields to update");
+=======
+      throw new Error('No fields to update');
+>>>>>>> b34fc7b (init)
     }
 
     values.push(id);
     const [result] = await db.execute(
+<<<<<<< HEAD
       `UPDATE inventory SET ${fields.join(
         ", "
       )}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`,
+=======
+      `UPDATE inventory SET ${fields.join(', ')}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`,
+>>>>>>> b34fc7b (init)
       values
     );
 
@@ -63,16 +89,28 @@ export default class Inventory {
   }
 
   static async delete(id) {
+<<<<<<< HEAD
     const [result] = await db.execute("DELETE FROM inventory WHERE id = ?", [
       id,
     ]);
+=======
+    const [result] = await db.execute(
+      'DELETE FROM inventory WHERE id = ?',
+      [id]
+    );
+>>>>>>> b34fc7b (init)
     return result.affectedRows > 0;
   }
 
   static async generateInventoryId() {
     const date = new Date();
+<<<<<<< HEAD
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, "");
     const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, "");
+=======
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+    const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, '');
+>>>>>>> b34fc7b (init)
     return `INV-${dateStr}-${timeStr}`;
   }
 
@@ -100,7 +138,21 @@ export default class Inventory {
   }
 
   static async count() {
+<<<<<<< HEAD
     const [rows] = await db.execute("SELECT COUNT(*) as count FROM inventory");
     return rows[0].count;
   }
 }
+=======
+    const [rows] = await db.execute('SELECT COUNT(*) as count FROM inventory');
+    return rows[0].count;
+  }
+}
+
+
+
+
+
+
+
+>>>>>>> b34fc7b (init)

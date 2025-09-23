@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 ﻿import { db } from "../config/db.js";
+=======
+import { db } from "../config/db.js";
+>>>>>>> b34fc7b (init)
 
 // Daily supplier delivery report
 export async function getDailySupplierReport(req, res) {
   try {
     const { date } = req.params;
+<<<<<<< HEAD
 
     if (!date) {
       return res.status(400).json({
@@ -14,6 +19,17 @@ export async function getDailySupplierReport(req, res) {
 
     const [deliveryStats] = await db.execute(
       `
+=======
+    
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        message: "Date parameter is required (YYYY-MM-DD format)"
+      });
+    }
+
+    const [deliveryStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_deliveries,
         SUM(quantity) as total_quantity,
@@ -21,6 +37,7 @@ export async function getDailySupplierReport(req, res) {
         AVG(rate_per_kg) as avg_rate,
         COUNT(DISTINCT supplier_id) as unique_suppliers
       FROM deliveries 
+<<<<<<< HEAD
       WHERE DATE(created_at) = ?
     `,
       [date]
@@ -28,6 +45,12 @@ export async function getDailySupplierReport(req, res) {
 
     const [supplierBreakdown] = await db.execute(
       `
+=======
+      WHERE DATE(delivery_date) = ?
+    `, [date]);
+
+    const [supplierBreakdown] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         s.name as supplier_name,
         s.supplier_id,
@@ -37,6 +60,7 @@ export async function getDailySupplierReport(req, res) {
         AVG(d.rate_per_kg) as avg_rate
       FROM deliveries d
       JOIN suppliers s ON d.supplier_id = s.id
+<<<<<<< HEAD
       WHERE DATE(d.created_at) = ?
       GROUP BY s.id, s.name, s.supplier_id
       ORDER BY total_amount DESC
@@ -46,6 +70,14 @@ export async function getDailySupplierReport(req, res) {
 
     const [paymentStats] = await db.execute(
       `
+=======
+      WHERE DATE(d.delivery_date) = ?
+      GROUP BY s.id, s.name, s.supplier_id
+      ORDER BY total_amount DESC
+    `, [date]);
+
+    const [paymentStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_payments,
         SUM(amount) as total_payment_amount,
@@ -53,23 +85,35 @@ export async function getDailySupplierReport(req, res) {
         COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_count
       FROM payments 
       WHERE DATE(payment_date) = ?
+<<<<<<< HEAD
     `,
       [date]
     );
+=======
+    `, [date]);
+>>>>>>> b34fc7b (init)
 
     res.json({
       success: true,
       date,
       deliveryStats: deliveryStats[0],
       supplierBreakdown,
+<<<<<<< HEAD
       paymentStats: paymentStats[0],
+=======
+      paymentStats: paymentStats[0]
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get daily supplier report error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
+<<<<<<< HEAD
       error: error.message,
+=======
+      error: error.message
+>>>>>>> b34fc7b (init)
     });
   }
 }
@@ -78,6 +122,7 @@ export async function getDailySupplierReport(req, res) {
 export async function getMonthlySupplierReport(req, res) {
   try {
     const { year, month } = req.params;
+<<<<<<< HEAD
 
     if (!year || !month) {
       return res.status(400).json({
@@ -88,12 +133,24 @@ export async function getMonthlySupplierReport(req, res) {
 
     const [monthlyStats] = await db.execute(
       `
+=======
+    
+    if (!year || !month) {
+      return res.status(400).json({
+        success: false,
+        message: "Year and month parameters are required"
+      });
+    }
+
+    const [monthlyStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_deliveries,
         SUM(quantity) as total_quantity,
         SUM(total_amount) as total_amount,
         AVG(rate_per_kg) as avg_rate,
         COUNT(DISTINCT supplier_id) as unique_suppliers,
+<<<<<<< HEAD
         MIN(created_at) as first_delivery,
         MAX(created_at) as last_delivery
       FROM deliveries 
@@ -106,10 +163,22 @@ export async function getMonthlySupplierReport(req, res) {
       `
       SELECT 
         DATE(created_at) as delivery_date,
+=======
+        MIN(delivery_date) as first_delivery,
+        MAX(delivery_date) as last_delivery
+      FROM deliveries 
+      WHERE YEAR(delivery_date) = ? AND MONTH(delivery_date) = ?
+    `, [year, month]);
+
+    const [dailyBreakdown] = await db.execute(`
+      SELECT 
+        DATE(delivery_date) as delivery_date,
+>>>>>>> b34fc7b (init)
         COUNT(*) as daily_deliveries,
         SUM(quantity) as daily_quantity,
         SUM(total_amount) as daily_amount
       FROM deliveries 
+<<<<<<< HEAD
       WHERE YEAR(created_at) = ? AND MONTH(created_at) = ?
       GROUP BY DATE(created_at)
       ORDER BY created_at
@@ -119,6 +188,14 @@ export async function getMonthlySupplierReport(req, res) {
 
     const [supplierRanking] = await db.execute(
       `
+=======
+      WHERE YEAR(delivery_date) = ? AND MONTH(delivery_date) = ?
+      GROUP BY DATE(delivery_date)
+      ORDER BY delivery_date
+    `, [year, month]);
+
+    const [supplierRanking] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         s.name as supplier_name,
         s.supplier_id,
@@ -129,26 +206,41 @@ export async function getMonthlySupplierReport(req, res) {
         RANK() OVER (ORDER BY SUM(d.total_amount) DESC) as ranking
       FROM deliveries d
       JOIN suppliers s ON d.supplier_id = s.id
+<<<<<<< HEAD
       WHERE YEAR(d.created_at) = ? AND MONTH(d.created_at) = ?
       GROUP BY s.id, s.name, s.supplier_id
       ORDER BY total_amount DESC
     `,
       [year, month]
     );
+=======
+      WHERE YEAR(d.delivery_date) = ? AND MONTH(d.delivery_date) = ?
+      GROUP BY s.id, s.name, s.supplier_id
+      ORDER BY total_amount DESC
+    `, [year, month]);
+>>>>>>> b34fc7b (init)
 
     res.json({
       success: true,
       period: { year: parseInt(year), month: parseInt(month) },
       monthlyStats: monthlyStats[0],
       dailyBreakdown,
+<<<<<<< HEAD
       supplierRanking,
+=======
+      supplierRanking
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get monthly supplier report error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
+<<<<<<< HEAD
       error: error.message,
+=======
+      error: error.message
+>>>>>>> b34fc7b (init)
     });
   }
 }
@@ -157,6 +249,7 @@ export async function getMonthlySupplierReport(req, res) {
 export async function getDailyInventoryReport(req, res) {
   try {
     const { date } = req.params;
+<<<<<<< HEAD
 
     if (!date) {
       return res.status(400).json({
@@ -167,6 +260,17 @@ export async function getDailyInventoryReport(req, res) {
 
     const [inventoryStats] = await db.execute(
       `
+=======
+    
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        message: "Date parameter is required (YYYY-MM-DD format)"
+      });
+    }
+
+    const [inventoryStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_items,
         SUM(quantity) as total_quantity,
@@ -175,12 +279,18 @@ export async function getDailyInventoryReport(req, res) {
         MAX(quantity) as max_quantity
       FROM inventory 
       WHERE DATE(createdAt) = ?
+<<<<<<< HEAD
     `,
       [date]
     );
 
     const [lowStockItems] = await db.execute(
       `
+=======
+    `, [date]);
+
+    const [lowStockItems] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         inventoryid,
         quantity,
@@ -188,12 +298,18 @@ export async function getDailyInventoryReport(req, res) {
       FROM inventory 
       WHERE quantity < 1000 AND DATE(createdAt) = ?
       ORDER BY quantity ASC
+<<<<<<< HEAD
     `,
       [date]
     );
 
     const [processingStats] = await db.execute(
       `
+=======
+    `, [date]);
+
+    const [processingStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_batches,
         SUM(input_weight_kg) as total_input_weight,
@@ -201,23 +317,35 @@ export async function getDailyInventoryReport(req, res) {
         AVG(efficiency) as avg_efficiency
       FROM production_batches 
       WHERE DATE(scheduled_date) = ? AND status = 'completed'
+<<<<<<< HEAD
     `,
       [date]
     );
+=======
+    `, [date]);
+>>>>>>> b34fc7b (init)
 
     res.json({
       success: true,
       date,
       inventoryStats: inventoryStats[0],
       lowStockItems,
+<<<<<<< HEAD
       processingStats: processingStats[0],
+=======
+      processingStats: processingStats[0]
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get daily inventory report error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
+<<<<<<< HEAD
       error: error.message,
+=======
+      error: error.message
+>>>>>>> b34fc7b (init)
     });
   }
 }
@@ -226,6 +354,7 @@ export async function getDailyInventoryReport(req, res) {
 export async function getMonthlyInventoryReport(req, res) {
   try {
     const { year, month } = req.params;
+<<<<<<< HEAD
 
     if (!year || !month) {
       return res.status(400).json({
@@ -236,6 +365,17 @@ export async function getMonthlyInventoryReport(req, res) {
 
     const [monthlyInventoryStats] = await db.execute(
       `
+=======
+    
+    if (!year || !month) {
+      return res.status(400).json({
+        success: false,
+        message: "Year and month parameters are required"
+      });
+    }
+
+    const [monthlyInventoryStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_items,
         SUM(quantity) as total_quantity,
@@ -245,12 +385,18 @@ export async function getMonthlyInventoryReport(req, res) {
         COUNT(CASE WHEN quantity < 1000 THEN 1 END) as low_stock_count
       FROM inventory 
       WHERE YEAR(createdAt) = ? AND MONTH(createdAt) = ?
+<<<<<<< HEAD
     `,
       [year, month]
     );
 
     const [dailyInventoryTrend] = await db.execute(
       `
+=======
+    `, [year, month]);
+
+    const [dailyInventoryTrend] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         DATE(createdAt) as inventory_date,
         COUNT(*) as daily_items,
@@ -259,12 +405,18 @@ export async function getMonthlyInventoryReport(req, res) {
       WHERE YEAR(createdAt) = ? AND MONTH(createdAt) = ?
       GROUP BY DATE(createdAt)
       ORDER BY inventory_date
+<<<<<<< HEAD
     `,
       [year, month]
     );
 
     const [productionStats] = await db.execute(
       `
+=======
+    `, [year, month]);
+
+    const [productionStats] = await db.execute(`
+>>>>>>> b34fc7b (init)
       SELECT 
         COUNT(*) as total_batches,
         SUM(input_weight_kg) as total_input_weight,
@@ -274,23 +426,35 @@ export async function getMonthlyInventoryReport(req, res) {
         COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress_batches
       FROM production_batches 
       WHERE YEAR(scheduled_date) = ? AND MONTH(scheduled_date) = ?
+<<<<<<< HEAD
     `,
       [year, month]
     );
+=======
+    `, [year, month]);
+>>>>>>> b34fc7b (init)
 
     res.json({
       success: true,
       period: { year: parseInt(year), month: parseInt(month) },
       monthlyInventoryStats: monthlyInventoryStats[0],
       dailyInventoryTrend,
+<<<<<<< HEAD
       productionStats: productionStats[0],
+=======
+      productionStats: productionStats[0]
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get monthly inventory report error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
+<<<<<<< HEAD
       error: error.message,
+=======
+      error: error.message
+>>>>>>> b34fc7b (init)
     });
   }
 }
@@ -298,6 +462,7 @@ export async function getMonthlyInventoryReport(req, res) {
 // Comprehensive dashboard report
 export async function getDashboardReport(req, res) {
   try {
+<<<<<<< HEAD
     const { period = "30d" } = req.query;
 
     let dateCondition = "";
@@ -319,6 +484,25 @@ export async function getDashboardReport(req, res) {
       default:
         dateCondition =
           "AND delivery_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+=======
+    const { period = '30d' } = req.query;
+    
+    let dateCondition = '';
+    let params = [];
+    
+    switch (period) {
+      case '7d':
+        dateCondition = 'AND delivery_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)';
+        break;
+      case '30d':
+        dateCondition = 'AND delivery_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+        break;
+      case '90d':
+        dateCondition = 'AND delivery_date >= DATE_SUB(CURDATE(), INTERVAL 90 DAY)';
+        break;
+      default:
+        dateCondition = 'AND delivery_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+>>>>>>> b34fc7b (init)
     }
 
     // Supplier statistics
@@ -359,13 +543,21 @@ export async function getDashboardReport(req, res) {
     const [recentActivities] = await db.execute(`
       SELECT 
         'delivery' as type,
+<<<<<<< HEAD
   d.created_at as date,
+=======
+        d.delivery_date as date,
+>>>>>>> b34fc7b (init)
         CONCAT('Delivery from ', s.name, ' - ', d.quantity, 'kg') as description,
         d.total_amount as amount
       FROM deliveries d
       JOIN suppliers s ON d.supplier_id = s.id
       WHERE 1=1 ${dateCondition}
+<<<<<<< HEAD
   ORDER BY d.created_at DESC
+=======
+      ORDER BY d.delivery_date DESC
+>>>>>>> b34fc7b (init)
       LIMIT 10
     `);
 
@@ -375,14 +567,22 @@ export async function getDashboardReport(req, res) {
       supplierStats: supplierStats[0],
       inventoryStats: inventoryStats[0],
       paymentStats: paymentStats[0],
+<<<<<<< HEAD
       recentActivities,
+=======
+      recentActivities
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get dashboard report error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
+<<<<<<< HEAD
       error: error.message,
+=======
+      error: error.message
+>>>>>>> b34fc7b (init)
     });
   }
 }

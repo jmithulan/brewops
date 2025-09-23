@@ -29,11 +29,24 @@ router.get("/google", (req, res, next) => {
   
   console.log("Starting Google OAuth flow - redirecting to Google...");
   
+<<<<<<< HEAD
+=======
+  // Allow dynamic redirect target via query param (frontend should pass its origin)
+  const requestedFrontend = req.query.redirect_url;
+  const fallbackFrontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const redirectTarget = requestedFrontend || fallbackFrontend;
+  
+>>>>>>> b34fc7b (init)
   // Proceed with Google authentication - extended scope for better profile data
   googlePassport.authenticate("google", { 
     scope: ["profile", "email"],
     prompt: 'select_account', // Always prompt user to select account
+<<<<<<< HEAD
     accessType: 'offline' // Request a refresh token
+=======
+    accessType: 'offline', // Request a refresh token
+    state: encodeURIComponent(redirectTarget)
+>>>>>>> b34fc7b (init)
   })(req, res, next);
 });
 
@@ -109,9 +122,24 @@ router.get("/google/callback", (req, res, next) => {
         console.warn("Failed to update last login time:", updateError.message);
       }
       
+<<<<<<< HEAD
       // Get the frontend URL from the environment or detect all possible ports
       const possiblePorts = ['5173', '5174', '5175', '5176', '5177', '5191'];
       const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:5176';
+=======
+      // Determine frontend URL (prefer dynamic state from initial request)
+      let frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      try {
+        if (req.query.state) {
+          const decoded = decodeURIComponent(req.query.state);
+          if (decoded.startsWith('http://') || decoded.startsWith('https://')) {
+            frontendBaseUrl = decoded;
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to parse OAuth state for redirect:', e.message);
+      }
+>>>>>>> b34fc7b (init)
       
       // Add some additional debug for troubleshooting
       const redirectUrl = `${frontendBaseUrl}/auth/google/success?token=${jwtToken}`;

@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+<<<<<<< HEAD
 import NavigationBar from "../../components/navigationBar";
+=======
+>>>>>>> b34fc7b (init)
 import SupplierSidebar from "../../components/SupplierSidebar";
 import { Link, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
@@ -18,9 +21,16 @@ import {
   FaDollarSign,
 } from "react-icons/fa";
 import Spinner from "../../components/Spinner";
+<<<<<<< HEAD
 import Footer from "../../components/Footer";
 
 export default function SupplierRecode() {
+=======
+import Footer from "../../components/footer";
+
+export default function SupplierRecode() {
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+>>>>>>> b34fc7b (init)
   const [originalRecords, setOriginalRecords] = useState([]);
   const [records, setRecords] = useState([]);
   const [visibleCount, setVisibleCount] = useState(10);
@@ -38,7 +48,11 @@ export default function SupplierRecode() {
   const fetchSuppliers = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
+<<<<<<< HEAD
       const response = await axios.get("http://localhost:5000/api/suppliers", {
+=======
+      const response = await axios.get(`${API_URL}/api/suppliers`, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -57,11 +71,19 @@ export default function SupplierRecode() {
       const token = localStorage.getItem("jwtToken");
       console.log("Token available:", !!token);
 
+<<<<<<< HEAD
       let url = "http://localhost:5000/api/deliveries";
 
       // If specific supplier is selected, use supplier-specific endpoint
       if (selectedSupplier) {
         url = `http://localhost:5000/api/deliveries/supplier/${selectedSupplier}`;
+=======
+      let url = `${API_URL}/api/deliveries`;
+
+      // If specific supplier is selected, use supplier-specific endpoint
+      if (selectedSupplier) {
+        url = `${API_URL}/api/deliveries/supplier/${selectedSupplier}`;
+>>>>>>> b34fc7b (init)
       }
 
       const response = await axios.get(url, {
@@ -232,7 +254,11 @@ export default function SupplierRecode() {
     ) {
       try {
         const token = localStorage.getItem("jwtToken");
+<<<<<<< HEAD
         await axios.delete(`http://localhost:5000/api/deliveries/${id}`, {
+=======
+        await axios.delete(`${API_URL}/api/deliveries/${id}`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -256,7 +282,10 @@ export default function SupplierRecode() {
     <div className="min-h-screen flex flex-col">
       <Toaster position="top-center" />
       <div className="flex-1">
+<<<<<<< HEAD
         <NavigationBar />
+=======
+>>>>>>> b34fc7b (init)
         <div className="flex">
           <SupplierSidebar />
           <main className="flex-1 p-8">

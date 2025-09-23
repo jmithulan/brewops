@@ -26,7 +26,11 @@ export default class Payment {
 
   static async findById(id) {
     const [rows] = await db.execute(
+<<<<<<< HEAD
       `SELECT p.*, s.name as supplier_name, s.contact_number as supplier_contact
+=======
+      `SELECT p.*, s.supplier_name, s.phone as supplier_contact
+>>>>>>> b34fc7b (init)
        FROM payments p
        LEFT JOIN suppliers s ON p.supplier_id = s.id
        WHERE p.id = ?`,
@@ -37,7 +41,11 @@ export default class Payment {
 
   static async findBySupplier(supplierId, limit = 50, offset = 0) {
     const [rows] = await db.execute(
+<<<<<<< HEAD
       `SELECT p.*, s.name as supplier_name, s.contact_number as supplier_contact
+=======
+      `SELECT p.*, s.supplier_name, s.phone as supplier_contact
+>>>>>>> b34fc7b (init)
        FROM payments p
        LEFT JOIN suppliers s ON p.supplier_id = s.id
        WHERE p.supplier_id = ?
@@ -49,7 +57,11 @@ export default class Payment {
   }
 
   static async findAll(limit = 50, offset = 0, filters = {}) {
+<<<<<<< HEAD
     let query = `SELECT p.*, s.name as supplier_name, s.contact_number as supplier_contact
+=======
+    let query = `SELECT p.*, s.supplier_name, s.phone as supplier_contact
+>>>>>>> b34fc7b (init)
                  FROM payments p
                  LEFT JOIN suppliers s ON p.supplier_id = s.id
                  WHERE 1=1`;
@@ -141,7 +153,11 @@ export default class Payment {
       `SELECT 
          COUNT(*) as total_payments,
          SUM(amount) as total_amount,
+<<<<<<< HEAD
          s.name as supplier_name,
+=======
+         s.supplier_name,
+>>>>>>> b34fc7b (init)
          p.payment_method
        FROM payments p
        LEFT JOIN suppliers s ON p.supplier_id = s.id
@@ -158,7 +174,11 @@ export default class Payment {
       `SELECT 
          COUNT(*) as total_payments,
          SUM(amount) as total_amount,
+<<<<<<< HEAD
          s.name as supplier_name,
+=======
+         s.supplier_name,
+>>>>>>> b34fc7b (init)
          p.payment_method
        FROM payments p
        LEFT JOIN suppliers s ON p.supplier_id = s.id

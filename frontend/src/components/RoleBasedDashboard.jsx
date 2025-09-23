@@ -1,10 +1,17 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/authcontext';
+<<<<<<< HEAD
 import AdminDashboard from '../pages/adminDashboard';
 import ProductionManagerDashboard from '../pages/ProductionManagerDashboard';
 import StaffDashboard from '../pages/StaffDashboard';
 import SupplierDashboard from '../pages/supplierDashboard';
+=======
+import AdminDashboard from '../pages/Admin/adminDashboard';
+import ProductionManagerDashboard from '../pages/Production/ProductionManagerDashboard';
+import StaffDashboard from '../pages/Staff/StaffDashboard';
+import SupplierDashboard from '../pages/Supplier/supplierDashboard';
+>>>>>>> b34fc7b (init)
 import toast from 'react-hot-toast';
 
 /**

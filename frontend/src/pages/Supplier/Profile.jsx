@@ -27,9 +27,15 @@ export default function ProfilePage() {
     (async () => {
       try {
         setLoading(true);
+<<<<<<< HEAD
         const token = localStorage.getItem("token");
         const { data } = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/users/profile`,
+=======
+        const token = localStorage.getItem("jwtToken");
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
+>>>>>>> b34fc7b (init)
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUser(data);
@@ -73,7 +79,11 @@ export default function ProfilePage() {
         else if (k !== "profileImageFile") formData.append(k, v);
       });
       await axios.put(
+<<<<<<< HEAD
         `${import.meta.env.VITE_BACKEND_URL}/api/users/profile`,
+=======
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
+>>>>>>> b34fc7b (init)
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -92,7 +102,11 @@ export default function ProfilePage() {
       setLoading(true);
       const token = localStorage.getItem("token");
       await axios.put(
+<<<<<<< HEAD
         `${import.meta.env.VITE_BACKEND_URL}/api/users/change-password`,
+=======
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/change-password`,
+>>>>>>> b34fc7b (init)
         { password: passwordForm.password },
         { headers: { Authorization: `Bearer ${token}` } }
       );

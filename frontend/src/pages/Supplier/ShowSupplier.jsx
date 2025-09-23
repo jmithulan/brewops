@@ -23,7 +23,11 @@ export default function ShowSupplier() {
     const fetchSupplier = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:5000/api/suppliers/${id}`, {
+=======
+        const response = await axios.get(`http://localhost:4323/api/suppliers/${id}`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
         

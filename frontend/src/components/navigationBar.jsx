@@ -6,15 +6,22 @@ import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import ProfileMenu from './ProfileMenu';
 
+<<<<<<< HEAD
 // Backend URL configuration
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
 
+=======
+>>>>>>> b34fc7b (init)
 // Keep a singleton socket instance to avoid rapid create/destroy cycles
 // (React StrictMode in development can mount/unmount components twice).
 let socketInstance = null;
 let socketHandlersAttached = false;
 
 const NavigationBar = ({ onMenuClick }) => {
+<<<<<<< HEAD
+=======
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+>>>>>>> b34fc7b (init)
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -42,7 +49,11 @@ const NavigationBar = ({ onMenuClick }) => {
     // Reuse singleton socket to avoid close-before-open
     if (!socketInstance) {
       try {
+<<<<<<< HEAD
         socketInstance = io(BACKEND_URL, {
+=======
+        socketInstance = io(API_URL, {
+>>>>>>> b34fc7b (init)
           transports: ['websocket'],
           reconnectionAttempts: 5,
           reconnectionDelayMax: 5000,
@@ -157,7 +168,11 @@ const NavigationBar = ({ onMenuClick }) => {
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       const res = await axios.get(`${BACKEND_URL}/api/profile`, { 
+=======
+      const res = await axios.get(`${API_URL}/api/profile`, { 
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       // Adjust for backend response structure
@@ -177,7 +192,11 @@ const NavigationBar = ({ onMenuClick }) => {
   fetchNotifications._lastCalled = Date.now();
     try {
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       const res = await axios.get(`${BACKEND_URL}/api/notifications`, {
+=======
+      const res = await axios.get(`${API_URL}/api/notifications`, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -211,7 +230,11 @@ const NavigationBar = ({ onMenuClick }) => {
   fetchMessages._lastCalled = Date.now();
     try {
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       const res = await axios.get(`${BACKEND_URL}/api/messages`, {
+=======
+      const res = await axios.get(`${API_URL}/api/messages`, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -237,7 +260,11 @@ const NavigationBar = ({ onMenuClick }) => {
     try {
       const token = localStorage.getItem('jwtToken');
       // Use a wildcard search to get all users
+<<<<<<< HEAD
       const res = await axios.get(`${BACKEND_URL}/api/messages/search-users?query=a`, {
+=======
+      const res = await axios.get(`${API_URL}/api/messages/search-users?query=a`, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -257,7 +284,11 @@ const NavigationBar = ({ onMenuClick }) => {
   const fetchChatHistory = async (userId) => {
     try {
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       const res = await axios.get(`${BACKEND_URL}/api/messages/chat/${userId}`, {
+=======
+      const res = await axios.get(`${API_URL}/api/messages/chat/${userId}`, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -283,7 +314,11 @@ const NavigationBar = ({ onMenuClick }) => {
       }
       
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       await axios.patch(`${BACKEND_URL}/api/notifications/${notificationId}/read`, {}, {
+=======
+      await axios.patch(`${API_URL}/api/notifications/${notificationId}/read`, {}, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -308,7 +343,11 @@ const NavigationBar = ({ onMenuClick }) => {
       }
       
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       await axios.patch(`${BACKEND_URL}/api/messages/${messageId}/read`, {}, {
+=======
+      await axios.patch(`${API_URL}/api/messages/${messageId}/read`, {}, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -329,7 +368,11 @@ const NavigationBar = ({ onMenuClick }) => {
 
     try {
       const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
       const res = await axios.post(`${BACKEND_URL}/api/messages/send`, {
+=======
+      const res = await axios.post(`${API_URL}/api/messages/send`, {
+>>>>>>> b34fc7b (init)
         receiverId: selectedUser.id,
         message: messageText.trim()
       }, {
@@ -456,7 +499,22 @@ const NavigationBar = ({ onMenuClick }) => {
             </div>
           </div>
           <div className="p-4 space-y-2">
+<<<<<<< HEAD
             <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors" onClick={() => navigate('/')}> 
+=======
+            <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors" onClick={() => {
+              // Navigate to role-based dashboard instead of public home
+              if (user?.role === 'admin' || user?.role === 'manager') {
+                navigate('/admin-dashboard');
+              } else if (user?.role === 'staff') {
+                navigate('/staff-dashboard');
+              } else if (user?.role === 'supplier') {
+                navigate('/supplier-dashboard');
+              } else {
+                navigate('/dashboard');
+              }
+            }}> 
+>>>>>>> b34fc7b (init)
               <Home className="w-5 h-5 text-gray-600" /> 
               <span>Dashboard</span> 
             </button>
@@ -464,7 +522,11 @@ const NavigationBar = ({ onMenuClick }) => {
               <User className="w-5 h-5 text-gray-600" /> 
               <span>Profile</span> 
             </button>
+<<<<<<< HEAD
             <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors" onClick={() => navigate('/ProductionManagerDashboard')}> 
+=======
+            <button className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 rounded-lg transition-colors" onClick={() => navigate('/reports')}> 
+>>>>>>> b34fc7b (init)
               <BarChart3 className="w-5 h-5 text-gray-600" /> 
               <span>Reports</span> 
             </button>

@@ -2,7 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+<<<<<<< HEAD
 import NavigationBar from '../../components/navigationBar';
+=======
+>>>>>>> b34fc7b (init)
 import SupplierSidebar from '../../components/SupplierSidebar';
 import { Link, useLocation } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,7 +14,11 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import { BsInfoCircle } from 'react-icons/bs';
 import { FaBoxOpen, FaTrashAlt, FaEdit, FaPlusCircle, FaUsers } from 'react-icons/fa';
 import Spinner from '../../components/Spinner';
+<<<<<<< HEAD
 import Footer from '../../components/Footer';
+=======
+import Footer from '../../components/footer';
+>>>>>>> b34fc7b (init)
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -37,6 +44,10 @@ ChartJS.register(
 );
 
 export default function SupplierHome() {
+<<<<<<< HEAD
+=======
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+>>>>>>> b34fc7b (init)
   const [originalSuppliers, setOriginalSuppliers] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [visibleCount, setVisibleCount] = useState(10);
@@ -59,13 +70,21 @@ export default function SupplierHome() {
       // Try to fetch all suppliers first (including inactive)
       let response;
       try {
+<<<<<<< HEAD
         response = await axios.get('http://localhost:5000/api/suppliers/all', {
+=======
+        response = await axios.get(`${API_URL}/api/suppliers/all`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (apiError) {
         console.log('All suppliers endpoint not available, trying default endpoint...');
         // Fallback to regular suppliers endpoint
+<<<<<<< HEAD
         response = await axios.get('http://localhost:5000/api/suppliers', {
+=======
+        response = await axios.get(`${API_URL}/api/suppliers`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -443,7 +462,10 @@ export default function SupplierHome() {
 
   return (
     <div className="min-h-screen flex flex-col">
+<<<<<<< HEAD
       <NavigationBar />
+=======
+>>>>>>> b34fc7b (init)
       {/* Layout with Sidebar */}
       <div className="flex flex-1">
         {/* Sidebar */}
@@ -451,13 +473,21 @@ export default function SupplierHome() {
           <Link to="/SupplierHome" className="flex items-center gap-2 px-4 py-2 rounded bg-green-600 bg-opacity-40 text-sm font-medium">
             <FaUsers /> Suppliers
           </Link>
+<<<<<<< HEAD
           <Link to="/SupplierRecode" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
+=======
+          <Link to="/suppliers" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
+>>>>>>> b34fc7b (init)
             <FaEdit /> Supply Records
           </Link>
           <Link to="/SupplierHome" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
             <FaBoxOpen /> Analytics
           </Link>
+<<<<<<< HEAD
           <Link to="/SupplierHome" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
+=======
+          <Link to="/reports" className="flex items-center gap-2 px-4 py-2 rounded hover:bg-gray-700 text-sm font-medium">
+>>>>>>> b34fc7b (init)
             <FaPlusCircle /> Reports
           </Link>
         </aside>
@@ -481,7 +511,11 @@ export default function SupplierHome() {
                 Generate Report
               </button>
               <Link
+<<<<<<< HEAD
                 to="/suppliers/create"
+=======
+                to="/suppliers/new"
+>>>>>>> b34fc7b (init)
                 state={{ background: location }}
                 className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900"
               >
@@ -548,21 +582,33 @@ export default function SupplierHome() {
                       <td className="px-6 py-3">
                         <div className="flex gap-4">
                           <Link 
+<<<<<<< HEAD
                             to={`/suppliers/details/${item._id || item.id}`} 
+=======
+                            to={`/suppliers/${item._id || item.id}`} 
+>>>>>>> b34fc7b (init)
                             state={{ background: location }}
                             className="text-green-700 text-xl"
                           >
                             <BsInfoCircle />
                           </Link>
                           <Link 
+<<<<<<< HEAD
                             to={`/suppliers/edit/${item._id || item.id}`} 
+=======
+                            to={`/suppliers/${item._id || item.id}/edit`} 
+>>>>>>> b34fc7b (init)
                             state={{ background: location }}
                             className="text-yellow-600 text-xl"
                           >
                             <AiOutlineEdit />
                           </Link>
                           <Link 
+<<<<<<< HEAD
                             to={`/suppliers/delete/${item._id || item.id}`} 
+=======
+                            to={`/suppliers/${item._id || item.id}/delete`} 
+>>>>>>> b34fc7b (init)
                             state={{ background: location }}
                             className="text-red-600 text-xl"
                           >

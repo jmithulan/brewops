@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 
 const CreateSupplier = () => {
+<<<<<<< HEAD
+=======
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+>>>>>>> b34fc7b (init)
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [nicNumber, setNicNumber] = useState('');
@@ -36,7 +40,11 @@ const CreateSupplier = () => {
         const token = localStorage.getItem('jwtToken');
         
         try {
+<<<<<<< HEAD
           const response = await axios.get('http://localhost:5000/api/suppliers/next-id', {
+=======
+          const response = await axios.get(`${API_URL}/api/suppliers/next-id`, {
+>>>>>>> b34fc7b (init)
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -49,7 +57,11 @@ const CreateSupplier = () => {
         }
 
         // Fallback: calculate the next ID based on existing suppliers
+<<<<<<< HEAD
         const suppliersResponse = await axios.get('http://localhost:5000/api/suppliers', {
+=======
+        const suppliersResponse = await axios.get(`${API_URL}/api/suppliers`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -151,7 +163,11 @@ const CreateSupplier = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('jwtToken'); 
+<<<<<<< HEAD
       const res = await axios.post('http://localhost:5000/api/suppliers', data, {
+=======
+      const res = await axios.post(`${API_URL}/api/suppliers`, data, {
+>>>>>>> b34fc7b (init)
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data && res.data.success) {

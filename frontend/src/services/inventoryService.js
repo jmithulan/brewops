@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import api from "./api";
 
 export const inventoryService = {
@@ -5,6 +6,15 @@ export const inventoryService = {
   getInventories: async (config = {}) => {
     try {
       const response = await api.get("/inventory", config);
+=======
+import api from './api';
+
+export const inventoryService = {
+  // Get all inventories
+  getInventories: async () => {
+    try {
+      const response = await api.get('/inventory');
+>>>>>>> b34fc7b (init)
       return response.data;
     } catch (error) {
       throw error;
@@ -24,7 +34,11 @@ export const inventoryService = {
   // Create new inventory
   createInventory: async (inventoryData) => {
     try {
+<<<<<<< HEAD
       const response = await api.post("/inventorY", inventoryData);
+=======
+      const response = await api.post('/inventory', inventoryData);
+>>>>>>> b34fc7b (init)
       return response.data;
     } catch (error) {
       throw error;
@@ -59,6 +73,7 @@ export const inventoryService = {
     } catch (error) {
       throw error;
     }
+<<<<<<< HEAD
   },
 
   // Generate inventory ID
@@ -71,3 +86,9 @@ export const inventoryService = {
     }
   },
 };
+=======
+  }
+};
+
+
+>>>>>>> b34fc7b (init)

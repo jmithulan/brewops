@@ -73,6 +73,18 @@ class User {
       throw new Error("Database error: " + error.message);
     }
   }
+<<<<<<< HEAD
+=======
+  
+  static async findAll() {
+    try {
+      const [rows] = await db.execute("SELECT * FROM users ORDER BY created_at DESC");
+      return rows;
+    } catch (error) {
+      throw new Error("Database error: " + error.message);
+    }
+  }
+>>>>>>> b34fc7b (init)
 
   static async create(userData) {
     try {
@@ -114,7 +126,11 @@ class User {
       console.log("Available columns:", columns.join(', '));
       
       // Build dynamic query based on available columns
+<<<<<<< HEAD
       let fields = ['name', 'email', 'password_hash', 'role'];
+=======
+      let fields = ['name', 'email', 'password', 'role'];
+>>>>>>> b34fc7b (init)
       let placeholders = ['?', '?', '?', '?'];
       let values = [name, email, hashedPassword, role];
       
@@ -196,8 +212,13 @@ class User {
   static async findAll() {
     try {
       const [rows] = await db.execute(
+<<<<<<< HEAD
         `SELECT id, name, email, role, phone, employee_id, is_active, 
          created_at, last_login FROM users ORDER BY created_at DESC`
+=======
+        `SELECT id, name, email, role, phone, employee_id, 
+         created_at FROM users ORDER BY created_at DESC`
+>>>>>>> b34fc7b (init)
       );
       return rows;
     } catch (error) {
@@ -207,10 +228,23 @@ class User {
   
   static async updateLastLogin(userId) {
     try {
+<<<<<<< HEAD
       await db.execute(
         "UPDATE users SET last_login = NOW() WHERE id = ?",
         [userId]
       );
+=======
+      // Check if last_login column exists
+      const [tableInfo] = await db.execute("DESCRIBE users");
+      const columns = tableInfo.map(col => col.Field);
+      
+      if (columns.includes('last_login')) {
+        await db.execute(
+          "UPDATE users SET last_login = NOW() WHERE id = ?",
+          [userId]
+        );
+      }
+>>>>>>> b34fc7b (init)
       return true;
     } catch (error) {
       console.error("Error updating last login:", error);
@@ -223,9 +257,15 @@ class User {
       // Hash new password
       const hashedPassword = await bcrypt.hash(newPassword, 12);
       
+<<<<<<< HEAD
       // Increment token version to invalidate existing tokens
       await db.execute(
         "UPDATE users SET password_hash = ?, token_version = token_version + 1 WHERE id = ?",
+=======
+      // Update password
+      await db.execute(
+        "UPDATE users SET password = ? WHERE id = ?",
+>>>>>>> b34fc7b (init)
         [hashedPassword, userId]
       );
       
@@ -238,10 +278,23 @@ class User {
   
   static async updateStatus(userId, isActive) {
     try {
+<<<<<<< HEAD
       await db.execute(
         "UPDATE users SET is_active = ? WHERE id = ?",
         [isActive, userId]
       );
+=======
+      // Check if is_active column exists
+      const [tableInfo] = await db.execute("DESCRIBE users");
+      const columns = tableInfo.map(col => col.Field);
+      
+      if (columns.includes('is_active')) {
+        await db.execute(
+          "UPDATE users SET is_active = ? WHERE id = ?",
+          [isActive, userId]
+        );
+      }
+>>>>>>> b34fc7b (init)
       return true;
     } catch (error) {
       throw new Error("Failed to update user status");
@@ -256,6 +309,35 @@ class User {
       { id: 'supplier', name: 'Tea Leaf Supplier' },
     ];
   }
+<<<<<<< HEAD
+=======
+  
+  static async update(userId, updateData) {
+    try {
+      // Build dynamic update query
+      const fields = Object.keys(updateData);
+      const values = Object.values(updateData);
+      
+      if (fields.length === 0) {
+        throw new Error("No fields to update");
+      }
+      
+      const setClause = fields.map(field => `${field} = ?`).join(', ');
+      const query = `UPDATE users SET ${setClause} WHERE id = ?`;
+      
+      const [result] = await db.execute(query, [...values, userId]);
+      
+      if (result.affectedRows === 0) {
+        return null;
+      }
+      
+      // Return updated user
+      return await this.findById(userId);
+    } catch (error) {
+      throw new Error("Database error: " + error.message);
+    }
+  }
+>>>>>>> b34fc7b (init)
 }
 
 export default User;

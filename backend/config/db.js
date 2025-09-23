@@ -5,7 +5,14 @@ let pool;
 // Create connection pool for better performance
 const createPool = () => {
   if (!pool) {
+<<<<<<< HEAD
     pool = mysql.createPool({
+=======
+    // Check if we're using XAMPP MySQL
+    const isXAMPP = process.platform === 'darwin' && process.env.HOME && process.env.HOME.includes('Users');
+    
+    const poolConfig = {
+>>>>>>> b34fc7b (init)
       host: process.env.DB_HOST || "localhost",
       user: process.env.DB_USER || "root",
       password: process.env.DB_PASSWORD || "",
@@ -16,7 +23,18 @@ const createPool = () => {
       queueLimit: 0,
       charset: "utf8mb4",
       timezone: "+00:00",
+<<<<<<< HEAD
     });
+=======
+    };
+
+    // Use XAMPP socket if available
+    if (isXAMPP) {
+      poolConfig.socketPath = "/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock";
+    }
+
+    pool = mysql.createPool(poolConfig);
+>>>>>>> b34fc7b (init)
   }
   return pool;
 };

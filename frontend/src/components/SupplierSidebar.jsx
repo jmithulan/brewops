@@ -6,9 +6,15 @@ export default function SupplierSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
+<<<<<<< HEAD
     { label: 'Dashboard', icon: <FaHome />, to: '/staff' },
     { label: 'Supplier Management', icon: <FaUsers />, to: '/SupplierHome' },
     { label: 'Supply Record', icon: <FaPager />, to: '/SupplierRecode' },
+=======
+    { label: 'Dashboard', icon: <FaHome />, to: '/supplier-dashboard' },
+    { label: 'Supply Record', icon: <FaPager />, to: '/supplier/supply-records' },
+    { label: 'Payment Records', icon: <FaUsers />, to: '/suppliers/paymentSummary' },
+>>>>>>> b34fc7b (init)
   ];
 
   return (

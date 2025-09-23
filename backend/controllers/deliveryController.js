@@ -38,6 +38,12 @@ export async function createDelivery(req, res) {
 // Get all deliveries
 export async function getAllDeliveries(req, res) {
   try {
+<<<<<<< HEAD
+=======
+    // Ensure table exists before querying
+    await Delivery.ensureTableExists();
+    
+>>>>>>> b34fc7b (init)
     const { page = 1, limit = 20 } = req.query;
     const offset = (page - 1) * limit;
 
@@ -65,6 +71,12 @@ export async function getAllDeliveries(req, res) {
 // Get delivery by ID
 export async function getDeliveryById(req, res) {
   try {
+<<<<<<< HEAD
+=======
+    // Ensure table exists before querying
+    await Delivery.ensureTableExists();
+    
+>>>>>>> b34fc7b (init)
     const { id } = req.params;
     const delivery = await Delivery.findById(id);
     
@@ -77,7 +89,11 @@ export async function getDeliveryById(req, res) {
 
     res.json({
       success: true,
+<<<<<<< HEAD
       delivery
+=======
+      data: delivery
+>>>>>>> b34fc7b (init)
     });
   } catch (error) {
     console.error("Get delivery error:", error);
@@ -208,3 +224,9 @@ export async function getMonthlyDeliveryReport(req, res) {
 
 
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> b34fc7b (init)

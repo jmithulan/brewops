@@ -1,6 +1,10 @@
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 import Notification from "../models/Notification.js";
+<<<<<<< HEAD
+=======
+import { db } from "../config/db.js";
+>>>>>>> b34fc7b (init)
 
 // Get all messages for the current user
 export async function getUserMessages(req, res) {
@@ -377,4 +381,34 @@ export async function getRecentConversations(req, res) {
       error: error.message
     });
   }
+<<<<<<< HEAD
+=======
+}
+
+// Search users for messaging (used by /api/messages/search-users)
+export async function searchUsers(req, res) {
+  try {
+    const { query = "" } = req.query;
+    const q = String(query).trim().toLowerCase();
+    if (!q || q.length < 1) {
+      return res.json({ success: true, data: [] });
+    }
+
+    // Search by name, email, or employee_id
+    const like = `%${q}%`;
+    const [rows] = await db.execute(
+      `SELECT id, name, email, role, employee_id
+       FROM users
+       WHERE LOWER(name) LIKE ? OR LOWER(email) LIKE ? OR LOWER(employee_id) LIKE ?
+       ORDER BY name ASC
+       LIMIT 20`,
+      [like, like, like]
+    );
+
+    return res.json({ success: true, data: rows });
+  } catch (error) {
+    console.error("Search users error:", error);
+    return res.status(500).json({ success: false, message: "Server error", error: error.message });
+  }
+>>>>>>> b34fc7b (init)
 }

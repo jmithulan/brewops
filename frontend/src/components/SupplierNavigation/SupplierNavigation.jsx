@@ -12,8 +12,13 @@ export default function SupplierNavigation() {
           <div className="container">
             <div className="subnav">
               <Link to="">Home</Link>
+<<<<<<< HEAD
               <Link to="/SupplierHome">Suppliers</Link>
               <Link to="/SupplierRecodeTable">Supplier Record</Link>
+=======
+              <Link to="/supplier/supply-records">Supply Records</Link>
+              <Link to="/suppliers/paymentSummary">Payment Records</Link>
+>>>>>>> b34fc7b (init)
               <Link to="">
                 <img src={profile} alt="Profile" />
               </Link>

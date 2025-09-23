@@ -99,3 +99,9 @@ const PerformanceMonitor = ({ enabled = false }) => {
 };
 
 export default PerformanceMonitor;
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> b34fc7b (init)

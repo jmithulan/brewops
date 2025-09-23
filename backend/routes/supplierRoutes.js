@@ -33,4 +33,58 @@ router.delete("/:id", authenticateToken, deleteSupplier);
 router.post("/:id/deliveries", authenticateToken, createDelivery);
 router.get("/stats/deliveries", authenticateToken, getDeliveryStats);
 
+<<<<<<< HEAD
+=======
+// Additional routes for missing endpoints
+router.get("/active", authenticateToken, async (req, res) => {
+  try {
+    const suppliers = await getAllSuppliers(req, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+});
+
+router.get("/transactions", authenticateToken, async (req, res) => {
+  try {
+    const { supplier_id } = req.query;
+    if (!supplier_id) {
+      return res.status(400).json({
+        success: false,
+        message: "supplier_id parameter is required"
+      });
+    }
+    const transactions = await getSupplierTransactions({ params: { id: supplier_id } }, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+});
+
+router.get("/paymentSummary", authenticateToken, async (req, res) => {
+  try {
+    const { supplier_id, date_from, date_to } = req.query;
+    if (!supplier_id || !date_from || !date_to) {
+      return res.status(400).json({
+        success: false,
+        message: "supplier_id, date_from, and date_to parameters are required"
+      });
+    }
+    const summary = await getPaymentSummary({ params: { supplier_id }, query: { date_from, date_to } }, res);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message
+    });
+  }
+});
+
+>>>>>>> b34fc7b (init)
 export default router;

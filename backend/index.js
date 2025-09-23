@@ -16,14 +16,35 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import teaQualityRoutes from "./routes/teaQualityRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+<<<<<<< HEAD
 import connectDB from "./config/db.js";
+=======
+import adminRoutes from "./routes/adminRoutes.js";
+import supplierRequestRoutes from "./routes/supplierRequestRoutes.js";
+import backupRoutes from "./routes/backupRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
+import connectDB from "./config/db.js";
+import { authenticateToken } from "./middleware/auth.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+>>>>>>> b34fc7b (init)
 import http from "http";
 import { Server } from "socket.io";
 import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import passport from "passport";
+<<<<<<< HEAD
 import "./config/googleOAuth.js";
+=======
+import xss from "xss-clean";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from 'url';
+import "./config/googleOAuth.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+>>>>>>> b34fc7b (init)
 dotenv.config();
 
 const app = express();
@@ -36,6 +57,7 @@ connectDB()
   .catch((err) => console.error("MySQL connection error:", err));
 
 // CORS configuration for frontend integration
+<<<<<<< HEAD
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -71,6 +93,38 @@ app.use(
 
 // Special handling for Stripe webhook endpoint (needs raw body)
 app.use("/api/orders/webhook", express.raw({ type: "application/json" }));
+=======
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches allowed patterns
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "http://localhost:5176",
+      "http://localhost:5177",
+      "http://localhost:5191"
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost')) {
+      callback(null, true);
+    } else {
+      console.warn(`Origin ${origin} not allowed by CORS`);
+      callback(null, false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Special handling for Stripe webhook endpoint (needs raw body)
+app.use('/api/orders/webhook', express.raw({ type: 'application/json' }));
+>>>>>>> b34fc7b (init)
 
 // Regular JSON body parser for all other routes
 app.use(bodyParser.json());
@@ -79,11 +133,28 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 
 // Security middleware
+<<<<<<< HEAD
 app.use(helmet());
+=======
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+
+// XSS protection
+app.use(xss());
+>>>>>>> b34fc7b (init)
 
 // Logging middleware
 app.use(morgan("combined"));
 
+<<<<<<< HEAD
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -92,6 +163,55 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+=======
+// Rate limiting - More lenient for development
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000, // Increased from 100 to 1000
+  message: "Too many requests from this IP, please try again later.",
+  skip: (req) => {
+    // Skip rate limiting for development
+    return process.env.NODE_ENV === 'development';
+  }
+});
+app.use("/api", limiter);
+
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, 'uploads', 'avatars');
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // Accept only image files
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: fileFilter
+});
+
+// Make upload middleware available to routes
+app.use('/api/upload', upload.single('avatar'));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+>>>>>>> b34fc7b (init)
 // Health check endpoint
 app.get("/api/health", (req, res) => {
   res.json({
@@ -154,6 +274,7 @@ app.use("/api/auth", authRoutes);
 
 // JWT authentication middleware for protected routes only
 app.use((req, res, next) => {
+<<<<<<< HEAD
   const tokenString = req.header("Authorization");
   if (tokenString != null) {
     const token = tokenString.replace("Bearer ", "");
@@ -177,13 +298,35 @@ app.use((req, res, next) => {
   } else {
     next();
   }
+=======
+  // Skip authentication for public routes
+  const publicRoutes = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/google',
+    '/api/auth/google/callback',
+    '/api/health',
+    '/api'
+  ];
+  
+  if (publicRoutes.some(route => req.path.startsWith(route))) {
+    return next();
+  }
+  
+  // Use the proper authentication middleware for protected routes
+  return authenticateToken(req, res, next);
+>>>>>>> b34fc7b (init)
 });
 
 // Protected profile routes
 app.use("/api/profile", profileRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/notifications", notificationsRoutes);
+<<<<<<< HEAD
 app.use("/api/users", usersRoutes);
+=======
+app.use("/api/user", usersRoutes);
+>>>>>>> b34fc7b (init)
 
 // Payment module routes
 app.use("/api/suppliers", supplierRoutes);
@@ -195,14 +338,32 @@ app.use("/api/tea-qualities", teaQualityRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/orders", orderRoutes);
 
+<<<<<<< HEAD
+=======
+// Dashboard routes
+app.use("/api/dashboard", dashboardRoutes);
+
+// Admin routes
+app.use("/api/admin", adminRoutes);
+app.use("/api/supplier-requests", supplierRequestRoutes);
+app.use("/api/backup", backupRoutes);
+
+>>>>>>> b34fc7b (init)
 // WebSocket server setup
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
+<<<<<<< HEAD
     origin: function (origin, callback) {
       // Allow requests with no origin
       if (!origin) return callback(null, true);
 
+=======
+    origin: function(origin, callback) {
+      // Allow requests with no origin
+      if (!origin) return callback(null, true);
+      
+>>>>>>> b34fc7b (init)
       // Check if origin matches allowed patterns
       const allowedOrigins = [
         process.env.FRONTEND_URL,
@@ -211,6 +372,7 @@ const io = new Server(server, {
         "http://localhost:5175",
         "http://localhost:5176",
         "http://localhost:5177",
+<<<<<<< HEAD
         "http://localhost:5191",
       ];
 
@@ -218,6 +380,12 @@ const io = new Server(server, {
         allowedOrigins.indexOf(origin) !== -1 ||
         origin.startsWith("http://localhost")
       ) {
+=======
+        "http://localhost:5191"
+      ];
+      
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost')) {
+>>>>>>> b34fc7b (init)
         callback(null, true);
       } else {
         console.warn(`Origin ${origin} not allowed by Socket.IO CORS`);
@@ -225,17 +393,26 @@ const io = new Server(server, {
       }
     },
     methods: ["GET", "POST"],
+<<<<<<< HEAD
     credentials: true,
+=======
+    credentials: true
+>>>>>>> b34fc7b (init)
   },
 });
 
 // Make io available in Express routes
+<<<<<<< HEAD
 app.set("io", io);
+=======
+app.set('io', io);
+>>>>>>> b34fc7b (init)
 
 // Authentication middleware for Socket.IO
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth.token;
+<<<<<<< HEAD
 
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
@@ -254,6 +431,22 @@ io.use((socket, next) => {
         next();
       }
     );
+=======
+    
+    if (!token) {
+      return next(new Error("Authentication error: No token provided"));
+    }
+    
+    jwt.verify(token, process.env.JWT_KEY || "your_jwt_secret_key_here", (err, decoded) => {
+      if (err) {
+        return next(new Error("Authentication error: Invalid token"));
+      }
+      
+      // Add user data to socket
+      socket.user = decoded;
+      next();
+    });
+>>>>>>> b34fc7b (init)
   } catch (error) {
     next(new Error("Authentication error: " + error.message));
   }
@@ -262,18 +455,27 @@ io.use((socket, next) => {
 // Real-time notifications/messages
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id, "User ID:", socket.user?.id);
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> b34fc7b (init)
   // Join user to their own room for targeted messages
   if (socket.user?.id) {
     const userId = socket.user.id;
     socket.join(`user_${userId}`);
     console.log(`User ${userId} joined their room`);
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> b34fc7b (init)
     // Also join role-based room for role-specific broadcasts
     if (socket.user.role) {
       socket.join(`role_${socket.user.role}`);
       console.log(`User ${userId} joined ${socket.user.role} role room`);
     }
+<<<<<<< HEAD
 
     // Notify other users that this user is online
     socket.broadcast.emit("userStatus", {
@@ -291,6 +493,31 @@ io.on("connection", (socket) => {
         userRole: s.user.role,
       }));
 
+=======
+    
+    // Join supplier room if user is a supplier
+    if (socket.user.role === 'supplier') {
+      socket.join(`supplier_${userId}`);
+      console.log(`Supplier ${userId} joined supplier room`);
+    }
+    
+    // Notify other users that this user is online
+    socket.broadcast.emit("userStatus", { 
+      userId: userId, 
+      status: "online",
+      timestamp: new Date()
+    });
+    
+    // Send list of online users to the newly connected user
+    const onlineUsers = Array.from(io.sockets.sockets.values())
+      .filter(s => s.user?.id)
+      .map(s => ({
+        userId: s.user.id,
+        userName: s.user.name,
+        userRole: s.user.role
+      }));
+    
+>>>>>>> b34fc7b (init)
     socket.emit("onlineUsers", onlineUsers);
   }
 
@@ -299,25 +526,42 @@ io.on("connection", (socket) => {
     try {
       const { receiverId, message } = data;
       const senderId = socket.user.id;
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> b34fc7b (init)
       // Create message record in the database
       const Message = (await import("./models/Message.js")).default;
       const User = (await import("./models/User.js")).default;
       const Notification = (await import("./models/Notification.js")).default;
+<<<<<<< HEAD
 
       // Get sender and receiver
       const sender = await User.findById(senderId);
       const receiver = await User.findById(receiverId);
 
+=======
+      
+      // Get sender and receiver
+      const sender = await User.findById(senderId);
+      const receiver = await User.findById(receiverId);
+      
+>>>>>>> b34fc7b (init)
       if (!receiver) {
         socket.emit("error", { message: "Receiver not found" });
         return;
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> b34fc7b (init)
       // Create the message
       const newMessage = await Message.create({
         sender_id: senderId,
         receiver_id: receiverId,
+<<<<<<< HEAD
         message,
       });
 
@@ -337,6 +581,26 @@ io.on("connection", (socket) => {
         priority: "medium",
       });
 
+=======
+        message
+      });
+      
+      // Create a notification
+      await Notification.create({
+        title: `New message from ${sender.name}`,
+        message: message.length > 30 ? `${message.substring(0, 30)}...` : message,
+        type: 'message',
+        recipient_id: receiverId,
+        metadata: JSON.stringify({ 
+          senderId, 
+          messageId: newMessage.id,
+          senderName: sender.name,
+          senderRole: sender.role
+        }),
+        priority: 'medium'
+      });
+      
+>>>>>>> b34fc7b (init)
       // Emit to the receiver's room
       io.to(`user_${receiverId}`).emit("newMessage", {
         id: newMessage.id,
@@ -344,6 +608,7 @@ io.on("connection", (socket) => {
         senderName: sender.name,
         senderRole: sender.role,
         message,
+<<<<<<< HEAD
         timestamp: newMessage.timestamp || new Date(),
       });
 
@@ -364,6 +629,27 @@ io.on("connection", (socket) => {
         receiverId,
         message,
         timestamp: newMessage.timestamp || new Date(),
+=======
+        timestamp: newMessage.timestamp || new Date()
+      });
+      
+      // Also emit a notification event
+      io.to(`user_${receiverId}`).emit("notification", {
+        type: 'message',
+        title: `New message from ${sender.name}`,
+        message: message.length > 30 ? `${message.substring(0, 30)}...` : message,
+        senderId,
+        senderName: sender.name,
+        timestamp: new Date()
+      });
+      
+      // Confirm to sender
+      socket.emit("messageSent", { 
+        id: newMessage.id,
+        receiverId,
+        message,
+        timestamp: newMessage.timestamp || new Date()
+>>>>>>> b34fc7b (init)
       });
     } catch (error) {
       console.error("Socket send message error:", error);
@@ -376,15 +662,24 @@ io.on("connection", (socket) => {
     try {
       const { messageId } = data;
       const userId = socket.user.id;
+<<<<<<< HEAD
 
       const Message = (await import("./models/Message.js")).default;
 
       const message = await Message.findById(messageId);
 
+=======
+      
+      const Message = (await import("./models/Message.js")).default;
+      
+      const message = await Message.findById(messageId);
+      
+>>>>>>> b34fc7b (init)
       if (!message) {
         socket.emit("error", { message: "Message not found" });
         return;
       }
+<<<<<<< HEAD
 
       // Check if user is the receiver
       if (message.receiver_id !== userId) {
@@ -396,13 +691,30 @@ io.on("connection", (socket) => {
 
       await Message.markAsRead(messageId);
 
+=======
+      
+      // Check if user is the receiver
+      if (message.receiver_id !== userId) {
+        socket.emit("error", { message: "Can only mark messages sent to you as read" });
+        return;
+      }
+      
+      await Message.markAsRead(messageId);
+      
+>>>>>>> b34fc7b (init)
       // Notify sender that their message was read
       io.to(`user_${message.sender_id}`).emit("messageRead", {
         messageId,
         readBy: userId,
+<<<<<<< HEAD
         timestamp: new Date(),
       });
 
+=======
+        timestamp: new Date()
+      });
+      
+>>>>>>> b34fc7b (init)
       // Confirm to the user who marked the message as read
       socket.emit("messageMarkedRead", { messageId });
     } catch (error) {
@@ -410,21 +722,37 @@ io.on("connection", (socket) => {
       socket.emit("error", { message: "Failed to mark message as read" });
     }
   });
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> b34fc7b (init)
   // Handle typing indicator
   socket.on("typing", (data) => {
     const { receiverId, isTyping } = data;
     const userId = socket.user?.id;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> b34fc7b (init)
     if (userId && receiverId) {
       // Emit typing status to the recipient
       io.to(`user_${receiverId}`).emit("userTyping", {
         userId,
+<<<<<<< HEAD
         isTyping,
       });
     }
   });
 
+=======
+        isTyping
+      });
+    }
+  });
+  
+>>>>>>> b34fc7b (init)
   // Handle user presence
   socket.on("setStatus", (status) => {
     if (socket.user?.id) {
@@ -432,11 +760,16 @@ io.on("connection", (socket) => {
       socket.broadcast.emit("userStatus", {
         userId: socket.user.id,
         status,
+<<<<<<< HEAD
         timestamp: new Date(),
+=======
+        timestamp: new Date()
+>>>>>>> b34fc7b (init)
       });
     }
   });
 
+<<<<<<< HEAD
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
 
@@ -446,6 +779,47 @@ io.on("connection", (socket) => {
         userId: socket.user.id,
         status: "offline",
         timestamp: new Date(),
+=======
+  // Handle low-stock notifications
+  socket.on("checkLowStock", async (data) => {
+    try {
+      const { itemId, currentQuantity, minQuantity } = data;
+      
+      if (currentQuantity < minQuantity) {
+        // Create notification
+        const Notification = (await import("./models/Notification.js")).default;
+        await Notification.create({
+          title: "Low Stock Alert",
+          message: `Inventory item ${itemId} is running low. Current: ${currentQuantity}, Minimum: ${minQuantity}`,
+          type: 'warning',
+          recipient_role: 'manager',
+          priority: 'high',
+          metadata: JSON.stringify({ itemId, currentQuantity, minQuantity })
+        });
+
+        // Emit to managers and admins
+        io.to('role_manager').to('role_admin').emit("low-stock", {
+          itemId,
+          currentQuantity,
+          minQuantity,
+          timestamp: new Date()
+        });
+      }
+    } catch (error) {
+      console.error("Low stock check error:", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+    
+    // Notify other users that this user went offline
+    if (socket.user?.id) {
+      socket.broadcast.emit("userStatus", { 
+        userId: socket.user.id, 
+        status: "offline",
+        timestamp: new Date()
+>>>>>>> b34fc7b (init)
       });
     }
   });
@@ -462,6 +836,7 @@ app.use("/api/*", (req, res) => {
 });
 
 // Global error handler
+<<<<<<< HEAD
 app.use((error, req, res, next) => {
   console.error("Global error handler:", error);
   res.status(error.status || 500).json({
@@ -470,6 +845,9 @@ app.use((error, req, res, next) => {
     ...(process.env.NODE_ENV === "development" && { stack: error.stack }),
   });
 });
+=======
+app.use(errorHandler);
+>>>>>>> b34fc7b (init)
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
@@ -483,7 +861,11 @@ process.on("SIGINT", () => {
 });
 
 // Start the server
+<<<<<<< HEAD
 const PORT = process.env.PORT || 4321; // Using a less common port
+=======
+const PORT = process.env.PORT || 4323; // Using port 4323 to match frontend expectations
+>>>>>>> b34fc7b (init)
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

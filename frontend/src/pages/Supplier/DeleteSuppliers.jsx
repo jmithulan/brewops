@@ -25,7 +25,11 @@ export default function DeleteSuppliers() {
     const token = localStorage.getItem('jwtToken');
     
     axios
+<<<<<<< HEAD
       .get(`http://localhost:5000/api/suppliers/${id}`, {
+=======
+      .get(`http://localhost:4323/api/suppliers/${id}`, {
+>>>>>>> b34fc7b (init)
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -49,7 +53,11 @@ export default function DeleteSuppliers() {
     setLoading(true);
     
     axios
+<<<<<<< HEAD
       .delete(`http://localhost:5000/api/suppliers/${id}`, {
+=======
+      .delete(`http://localhost:4323/api/suppliers/${id}`, {
+>>>>>>> b34fc7b (init)
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

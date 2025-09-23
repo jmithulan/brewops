@@ -7,7 +7,12 @@ import {
   markConversationAsRead,
   getUnreadMessages,
   getMessageStats,
+<<<<<<< HEAD
   getRecentConversations
+=======
+  getRecentConversations,
+  searchUsers
+>>>>>>> b34fc7b (init)
 } from "../controllers/messageController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
@@ -40,4 +45,10 @@ router.get("/stats", getMessageStats);
 // Get recent conversations
 router.get("/conversations/recent", getRecentConversations);
 
+<<<<<<< HEAD
+=======
+// Search users endpoint used by the UI (prevents 404)
+router.get("/search-users", searchUsers);
+
+>>>>>>> b34fc7b (init)
 export default router;

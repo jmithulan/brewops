@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+<<<<<<< HEAD
+=======
+import { handleApiError, handleSuccess, handleLoading } from './errorHandler.jsx';
+>>>>>>> b34fc7b (init)
 
 // Generic API functions to eliminate duplication
 
@@ -45,6 +49,7 @@ export const apiHelpers = {
     }
   },
 
+<<<<<<< HEAD
   // Error handling
   handleError(error) {
     const message = error.response?.data?.message || error.message || 'An error occurred';
@@ -52,6 +57,15 @@ export const apiHelpers = {
     // Don't show toast for 401 errors (handled by interceptor)
     if (error.response?.status !== 401) {
       toast.error(message);
+=======
+  // Error handling with enhanced feedback
+  handleError(error, options = {}) {
+    const message = error.response?.data?.message || error.message || 'An error occurred';
+    
+    // Use enhanced error handling if not silent
+    if (!options.silent) {
+      handleApiError(error);
+>>>>>>> b34fc7b (init)
     }
     
     return { 
@@ -75,12 +89,21 @@ export const commonApi = {
 
   // Supplier management
   suppliers: {
+<<<<<<< HEAD
     getAll: () => apiHelpers.get('/suppliers'),
     getById: (id) => apiHelpers.get(`/suppliers/${id}`),
     create: (supplierData) => apiHelpers.post('/suppliers', supplierData),
     update: (id, supplierData) => apiHelpers.put(`/suppliers/${id}`, supplierData),
     delete: (id) => apiHelpers.delete(`/suppliers/${id}`),
     search: (query) => apiHelpers.get(`/suppliers/search?q=${encodeURIComponent(query)}`),
+=======
+    getAll: () => apiHelpers.get('/api/suppliers'),
+    getById: (id) => apiHelpers.get(`/api/suppliers/${id}`),
+    create: (supplierData) => apiHelpers.post('/api/suppliers/register', supplierData),
+    update: (id, supplierData) => apiHelpers.put(`/api/suppliers/${id}`, supplierData),
+    delete: (id) => apiHelpers.delete(`/api/suppliers/${id}`),
+    search: (query) => apiHelpers.get(`/api/suppliers/search?q=${encodeURIComponent(query)}`),
+>>>>>>> b34fc7b (init)
   },
 
   // Delivery management
@@ -97,12 +120,21 @@ export const commonApi = {
 
   // Inventory management
   inventory: {
+<<<<<<< HEAD
     getAll: () => apiHelpers.get('/inventory'),
     getById: (id) => apiHelpers.get(`/inventory/${id}`),
     create: (inventoryData) => apiHelpers.post('/inventory', inventoryData),
     update: (id, inventoryData) => apiHelpers.put(`/inventory/${id}`, inventoryData),
     delete: (id) => apiHelpers.delete(`/inventory/${id}`),
     generateId: () => apiHelpers.get('/inventory/generate-inventory-id'),
+=======
+    getAll: () => apiHelpers.get('/api/inventory'),
+    getById: (id) => apiHelpers.get(`/api/inventory/${id}`),
+    create: (inventoryData) => apiHelpers.post('/api/inventory', inventoryData),
+    update: (id, inventoryData) => apiHelpers.put(`/api/inventory/${id}`, inventoryData),
+    delete: (id) => apiHelpers.delete(`/api/inventory/${id}`),
+    generateId: () => apiHelpers.get('/api/inventory/generate-inventory-id'),
+>>>>>>> b34fc7b (init)
   },
 
   // Payment management

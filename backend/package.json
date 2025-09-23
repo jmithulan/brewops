@@ -27,16 +27,29 @@
     "mongoos": "^0.0.1-security",
     "mongoose": "^8.13.1",
     "morgan": "^1.10.1",
+<<<<<<< HEAD
+=======
+    "multer": "^1.4.5-lts.1",
+>>>>>>> b34fc7b (init)
     "mysql2": "^3.14.3",
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+<<<<<<< HEAD
+=======
+    "pdfkit": "^0.15.2",
+>>>>>>> b34fc7b (init)
     "react-icons": "^5.5.0",
     "socket.io": "^4.8.1",
     "stripe": "^14.25.0",
     "tailwindcss": "^4.1.11",
+<<<<<<< HEAD
     "uuid": "^9.0.1"
+=======
+    "uuid": "^9.0.1",
+    "xss-clean": "^0.1.4"
+>>>>>>> b34fc7b (init)
   },
   "devDependencies": {
     "daisyui": "^5.0.27"

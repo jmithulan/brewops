@@ -163,3 +163,9 @@ const SimpleFallback = ({ error = null }) => {
 };
 
 export default SimpleFallback;
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> b34fc7b (init)

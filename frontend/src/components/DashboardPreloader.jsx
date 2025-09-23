@@ -11,9 +11,15 @@ const DashboardPreloader = () => {
       try {
         // Preload dashboard pages
         const preloads = [
+<<<<<<< HEAD
           import('../pages/adminDashboard'),
           import('../pages/staffDashboard'),
           import('../pages/supplierDashboard'),
+=======
+          import('../pages/Admin/adminDashboard'),
+          import('../pages/Staff/StaffDashboard'),
+          import('../pages/Supplier/supplierDashboard'),
+>>>>>>> b34fc7b (init)
           import('../components/Footer')
         ];
         

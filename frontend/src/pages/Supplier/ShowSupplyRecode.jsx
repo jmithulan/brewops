@@ -24,7 +24,11 @@ export default function ShowSupplyRecord() {
     const fetchRecord = async () => {
       try {
         const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:5000/api/deliveries/${id}`, {
+=======
+        const response = await axios.get(`http://localhost:4323/api/deliveries/${id}`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
         

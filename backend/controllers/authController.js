@@ -96,7 +96,11 @@ export async function loginUser(req, res) {
     }
 
     // Verify password
+<<<<<<< HEAD
     const isValid = await User.comparePassword(password, user.password_hash);
+=======
+    const isValid = await User.comparePassword(password, user.password);
+>>>>>>> b34fc7b (init)
     if (!isValid) {
       console.log("Login failed: Invalid password for email:", email);
       return res.status(401).json({ 
@@ -105,8 +109,13 @@ export async function loginUser(req, res) {
       });
     }
 
+<<<<<<< HEAD
     // Check if account is active
     if (user.is_active === false) {
+=======
+    // Check if account is active (if column exists)
+    if (user.is_active !== undefined && user.is_active === false) {
+>>>>>>> b34fc7b (init)
       console.log("Login failed: Account is inactive for email:", email);
       return res.status(403).json({ 
         success: false,

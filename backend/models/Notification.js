@@ -42,12 +42,21 @@ class Notification {
       let query = `
         SELECT n.*, u.name as recipient_name 
         FROM notifications n
+<<<<<<< HEAD
         LEFT JOIN users u ON n.recipient_id = u.id
         WHERE (n.recipient_id = ? OR (n.recipient_role = ? AND n.recipient_id IS NULL))
         ORDER BY n.created_at DESC
       `;
       
       const [rows] = await db.execute(query, [recipientId, recipientRole]);
+=======
+        LEFT JOIN users u ON n.user_id = u.id
+        WHERE n.user_id = ?
+        ORDER BY n.created_at DESC
+      `;
+      
+      const [rows] = await db.execute(query, [recipientId]);
+>>>>>>> b34fc7b (init)
       return rows;
     } catch (error) {
       throw new Error("Database error: " + error.message);
@@ -57,7 +66,11 @@ class Notification {
   static async markAsRead(notificationId, userId) {
     try {
       const [result] = await db.execute(
+<<<<<<< HEAD
         "UPDATE notifications SET is_read = TRUE, read_at = CURRENT_TIMESTAMP WHERE id = ? AND recipient_id = ?",
+=======
+        "UPDATE notifications SET read_bool = TRUE WHERE id = ? AND user_id = ?",
+>>>>>>> b34fc7b (init)
         [notificationId, userId]
       );
       return result.affectedRows > 0;
@@ -83,9 +96,15 @@ class Notification {
       const [rows] = await db.execute(
         `SELECT COUNT(*) as count 
          FROM notifications 
+<<<<<<< HEAD
          WHERE (recipient_id = ? OR (recipient_role = ? AND recipient_id IS NULL)) 
          AND is_read = FALSE`,
         [userId, userRole]
+=======
+         WHERE (user_id = ? OR recipient_id = ?) 
+         AND (read_bool = FALSE OR is_read = FALSE)`,
+        [userId, userId]
+>>>>>>> b34fc7b (init)
       );
       return rows[0].count;
     } catch (error) {
@@ -96,8 +115,13 @@ class Notification {
   static async delete(notificationId, userId) {
     try {
       const [result] = await db.execute(
+<<<<<<< HEAD
         "DELETE FROM notifications WHERE id = ? AND recipient_id = ?",
         [notificationId, userId]
+=======
+        "DELETE FROM notifications WHERE id = ? AND (user_id = ? OR recipient_id = ?)",
+        [notificationId, userId, userId]
+>>>>>>> b34fc7b (init)
       );
       return result.affectedRows > 0;
     } catch (error) {

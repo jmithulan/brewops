@@ -105,4 +105,15 @@ const checkRole = (roles) => {
   };
 };
 
+<<<<<<< HEAD
 export { authenticateToken, checkRole };
+=======
+/**
+ * Middleware to authorize specific roles (alias for checkRole)
+ */
+const authorizeRoles = (roles) => {
+  return checkRole(roles);
+};
+
+export { authenticateToken, checkRole, authorizeRoles };
+>>>>>>> b34fc7b (init)

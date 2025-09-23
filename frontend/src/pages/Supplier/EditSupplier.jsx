@@ -5,6 +5,10 @@ import Spinner from '../../components/Spinner';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function EditSupplier() {
+<<<<<<< HEAD
+=======
+  const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+>>>>>>> b34fc7b (init)
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -77,7 +81,11 @@ export default function EditSupplier() {
       setLoading(true);
       try {
         const token = localStorage.getItem('jwtToken');
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:5000/api/suppliers/${id}`, {
+=======
+        const response = await axios.get(`${API_URL}/api/suppliers/${id}`, {
+>>>>>>> b34fc7b (init)
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -134,7 +142,11 @@ export default function EditSupplier() {
     try {
       const token = localStorage.getItem('jwtToken');
       
+<<<<<<< HEAD
       const res = await axios.put(`http://localhost:5000/api/suppliers/${id}`, data, {
+=======
+      const res = await axios.put(`${API_URL}/api/suppliers/${id}`, data, {
+>>>>>>> b34fc7b (init)
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+<<<<<<< HEAD
 
 const NavigationBar = () => {
+=======
+import { useAuth } from "../contexts/authcontext";
+
+const NavigationBar = () => {
+  const { isAuthenticated } = useAuth();
+  // Hide guest navigation when authenticated to avoid duplicate navbars
+  if (isAuthenticated && isAuthenticated()) {
+    return null;
+  }
+>>>>>>> b34fc7b (init)
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

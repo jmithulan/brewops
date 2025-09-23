@@ -1,0 +1,66 @@
+/* 
+ * App.css - Optimized for performance
+ * Contains critical CSS that should be loaded early
+ */
+
+/* Optimize content visibility to improve rendering performance */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 5000px; /* Estimate size to prevent layout shifts */
+}
+
+/* Optimize off-screen content */
+.optimize-offscreen {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Apply will-change judiciously to elements that will animate */
+.will-animate {
+  will-change: transform, opacity;
+}
+
+/* Improve perceived performance with skeleton loaders */
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Optimize images with object-fit */
+.optimize-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Optimize transitions */
+.optimize-transition {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+/* Optimize animations by using transform and opacity instead of layout properties */
+.optimize-animation {
+  transform: translateZ(0); /* Force GPU acceleration */
+}
+
+/* Apply to components that should load fast */
+.fast-component {
+  contain: content;
+  isolation: isolate;
+}
+
+/* Layout optimization */
+.optimize-layout {
+  display: grid;
+  contain: layout;
+}

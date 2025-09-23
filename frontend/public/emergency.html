@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrewOps - Emergency Recovery</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #166534;
+            border-bottom: 2px solid #22c55e;
+            padding-bottom: 10px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .error-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #166534;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        button:hover {
+            background-color: #15803d;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BrewOps - Emergency Recovery</h1>
+    
+    <div class="error-box">
+        <p><strong>Application Error:</strong> The BrewOps application failed to load properly.</p>
+        <p>This page is a fallback that can help you recover from common issues.</p>
+    </div>
+    
+    <div class="card">
+        <h2>Diagnostic Information</h2>
+        <ul id="diagnostics">
+            <li>Loading diagnostic information...</li>
+        </ul>
+    </div>
+    
+    <div class="card">
+        <h2>Recovery Options</h2>
+        <p>Try these options to restore normal application functionality:</p>
+        <div>
+            <button onclick="clearAuth()">Clear Authentication Data</button>
+            <button onclick="location.reload()">Reload Page</button>
+            <button onclick="location.href='/login'">Go to Login</button>
+        </div>
+    </div>
+    
+    <script>
+        // Run diagnostics when page loads
+        window.addEventListener('DOMContentLoaded', runDiagnostics);
+        
+        function runDiagnostics() {
+            const diagnosticsList = document.getElementById('diagnostics');
+            diagnosticsList.innerHTML = '';
+            
+            // Check for JWT token
+            try {
+                const token = localStorage.getItem('jwtToken');
+                addDiagnostic('JWT Token', token ? 'Present' : 'Not found');
+                
+                // If token exists, check if it's valid
+                if (token) {
+                    try {
+                        const parsedToken = parseJwt(token);
+                        const isExpired = parsedToken.exp < Date.now() / 1000;
+                        addDiagnostic('Token Expired', isExpired ? 'Yes' : 'No');
+                        addDiagnostic('User ID', parsedToken.id || 'Not found');
+                        addDiagnostic('User Role', parsedToken.role || 'Not found');
+                    } catch (e) {
+                        addDiagnostic('Token Format', 'Invalid (cannot parse)');
+                    }
+                }
+            } catch (e) {
+                addDiagnostic('localStorage Access', 'Failed: ' + e.message);
+            }
+            
+            // Check browser information
+            addDiagnostic('Browser', navigator.userAgent);
+            addDiagnostic('URL', window.location.href);
+            addDiagnostic('Backend URL', getBackendUrl());
+        }
+        
+        function addDiagnostic(name, value) {
+            const diagnosticsList = document.getElementById('diagnostics');
+            const item = document.createElement('li');
+            item.innerHTML = `<strong>${name}:</strong> ${value}`;
+            diagnosticsList.appendChild(item);
+        }
+        
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                console.error('Error parsing JWT:', e);
+                throw e;
+            }
+        }
+        
+        function clearAuth() {
+            try {
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('lastLogin');
+                alert('Authentication data cleared successfully.');
+                runDiagnostics();
+            } catch (e) {
+                alert('Failed to clear authentication data: ' + e.message);
+            }
+        }
+        
+        function getBackendUrl() {
+            // Check for backend URL in various places
+            // This is just a fallback for the static HTML page
+            return 'http://localhost:4323 (default)';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  
+  }
+  
+  .subnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #3FC060;
+    padding: 12px 20px;
+    border-radius: 8px;
+    flex-wrap: wrap;
+    
+  }
+  
+  .subnav a {
+    color: rgb(9, 9, 9);
+    text-decoration: none;
+    margin: 0 12px;
+    font-weight: 500;
+    font-size: 18px;
+    transition: color 0.3s;
+  }
+  
+  .subnav a:hover {
+    border-bottom: 2px solid rgb(16, 15, 15);
+    
+  }
+  
+  .subnav img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+    cursor: pointer;
+  }

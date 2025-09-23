@@ -1,0 +1,174 @@
+import React, { useState } from 'react';
+import { generateAndDownloadReport } from '../utils/reportGenerator';
+import { format } from 'date-fns';
+import axios from 'axios';
+import { handleSuccess, handleApiError } from '../utils/errorHandler.jsx';
+
+const ReportGenerator = ({ type = 'inventory' }) => {
+  const [reportPeriod, setReportPeriod] = useState('current');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const reportTypes = {
+    inventory: {
+      title: 'Inventory Report',
+      description: 'Generate a comprehensive report of current inventory levels, low stock alerts, and inventory trends.',
+      endpoints: {
+        current: '/api/reports/inventory',
+        monthly: '/api/reports/inventory'
+      }
+    },
+    supplier: {
+      title: 'Supplier Report',
+      description: 'Generate a detailed report of supplier activities, deliveries, and payment status.',
+      endpoints: {
+        current: '/api/reports/supplies',
+        monthly: '/api/reports/supplies'
+      }
+    },
+    dashboard: {
+      title: 'Dashboard Report',
+      description: 'Generate an executive summary report with key metrics from all areas of operations.',
+      endpoints: {
+        current: '/api/reports/summary'
+      }
+    }
+  };
+  
+  const reportType = reportTypes[type] || reportTypes.inventory;
+  
+  const handleGenerateReport = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      let endpoint = reportType.endpoints.current;
+      let params = { format: 'pdf' }; // Request PDF format
+      const today = new Date();
+      
+      // Add date parameters based on period
+      if (reportPeriod === '7d') {
+        const startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = today.toISOString().split('T')[0];
+      } else if (reportPeriod === '30d') {
+        const startDate = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = today.toISOString().split('T')[0];
+      } else if (reportPeriod === 'monthly') {
+        const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        params.startDate = startDate.toISOString().split('T')[0];
+        params.endDate = endDate.toISOString().split('T')[0];
+      }
+      
+      // Get the token from localStorage
+      const token = localStorage.getItem('jwtToken');
+      const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4323';
+      
+      // Make the API request
+      const response = await axios.get(`${API_URL}${endpoint}`, {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'blob' // Important for PDF download
+      });
+      
+      // Create blob and download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${type}_report_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+        } catch (err) {
+          console.error('Error generating report:', err);
+          handleApiError(err, 'Failed to generate the report. Please try again later.');
+          setError('Failed to generate the report. Please try again later.');
+        } finally {
+          setIsLoading(false);
+        }
+  };
+  
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-lg font-bold text-green-800 mb-2">{reportType.title}</h3>
+      <p className="text-gray-600 mb-4">{reportType.description}</p>
+      
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Report Period</label>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setReportPeriod('current')}
+            className={`px-3 py-1 rounded-md text-sm ${
+              reportPeriod === 'current' 
+                ? 'bg-green-700 text-white' 
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            Current
+          </button>
+          <button
+            onClick={() => setReportPeriod('7d')}
+            className={`px-3 py-1 rounded-md text-sm ${
+              reportPeriod === '7d' 
+                ? 'bg-green-700 text-white' 
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            Last 7 Days
+          </button>
+          <button
+            onClick={() => setReportPeriod('30d')}
+            className={`px-3 py-1 rounded-md text-sm ${
+              reportPeriod === '30d' 
+                ? 'bg-green-700 text-white' 
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            Last 30 Days
+          </button>
+          <button
+            onClick={() => setReportPeriod('monthly')}
+            className={`px-3 py-1 rounded-md text-sm ${
+              reportPeriod === 'monthly' 
+                ? 'bg-green-700 text-white' 
+                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+            }`}
+          >
+            This Month
+          </button>
+        </div>
+      </div>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+      
+      <button
+        onClick={handleGenerateReport}
+        disabled={isLoading}
+        className="w-full bg-green-700 text-white py-2 px-4 rounded-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center justify-center"
+      >
+        {isLoading ? (
+          <>
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Generating...
+          </>
+        ) : (
+          <>Generate Report</>
+        )}
+      </button>
+    </div>
+  );
+};
+
+export default ReportGenerator;
